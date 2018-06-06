@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>鼠标点击移动</title>
+    <title>篮球跳跃</title>
     <meta charset="utf-8">
 </head>
 <body>
@@ -11,15 +11,18 @@
 <script type="text/javascript">
     var canvas = document.getElementById("myCanvas");
     var context = canvas.getContext("2d");
+    context.font = "20px Arial";
+
     //var mouseX,mouseY;
     
     var ball_x = 100,
         ball_y = 250,
         ball_r = 20;//篮球ball圆心坐标,半径
     var v_x = 2,
-        v_y = 10,
-        g   = 10;//球分解速度,重力加速度
-    var groundy = 300;//地面y值
+        v_y = 1;//球分解速度
+    var g   = 1;//重力加速度
+    var af  = 5;//空气阻力
+    var groundy = 500;//地面y值
     var t = 0;//时间
 
 
@@ -32,7 +35,12 @@
     var BBU = function(){
         //Ball Bounce Up
         //篮球自己弹起来
-
+        //ball_y -=  ((v_y * t + 0.5 * g * t*t));
+        ball_y -=  ((v_y * 1 ));
+        v_y -= (g * 1);
+        if (ball_y>=groundy){
+            v_y = -v_y-1;
+        }
     }
 
 
@@ -50,16 +58,22 @@
         width = ball.width;
         height = ball.height;
         setInterval(function () {
-            context.clearRect(0, 0, 400, 200);
+            context.clearRect(0, 0, 1000, 1240);
+            //数据显示
+            context.fillText("Ball_y: "+ball_y,20,20);
+            context.fillText("v_y: "+v_y,20,120);
+            console.log("v_y: "+v_y);
+
             context.save();
             context.translate(ball_x, ball_y);
 
-            
 
+            BBU();
+            t++;
 
-            context.drawImage(ball, 0, 0);
+            context.drawImage(ball, 0, 0, 290,285,0,0,100,98);
             context.restore();
-        }, 1000 / 60);
+        }, 1000 / 60*1);
     };
 
 
