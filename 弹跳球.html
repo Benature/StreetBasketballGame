@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>鼠标点击移动</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<canvas id="myCanvas" width="1000" height="1240" style="border:solid">
+    你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
+</canvas>
+<script type="text/javascript">
+    var canvas = document.getElementById("myCanvas");
+    var context = canvas.getContext("2d");
+    //var mouseX,mouseY;
+    
+    var ball_x = 100,
+        ball_y = 250,
+        ball_r = 20;//篮球ball圆心坐标,半径
+    var v_x = 2,
+        v_y = 10,
+        g   = 10;//球分解速度,重力加速度
+    var groundy = 300;//地面y值
+    var t = 0;//时间
+
+
+
+    //点击鼠标触发弹起
+    canvas.addEventListener("mousedown", function (e) {
+        console.log("mousedown");
+    }, false);
+
+    var BBU = function(){
+        //Ball Bounce Up
+        //篮球自己弹起来
+
+    }
+
+
+
+    var CBBU = function(){
+        //Click then Ball Bounce Up 
+        //点击后篮球弹起
+        
+    }
+
+
+    var ball = new Image();
+    ball.src = "big_face.png";
+    ball.onload = function () {
+        width = ball.width;
+        height = ball.height;
+        setInterval(function () {
+            context.clearRect(0, 0, 400, 200);
+            context.save();
+            context.translate(ball_x, ball_y);
+
+            
+
+
+            context.drawImage(ball, 0, 0);
+            context.restore();
+        }, 1000 / 60);
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+    canvas.addEventListener("mousedown", function (e) {
+        mouseX = e.pageX - canvas.clientLeft;
+        mouseY = e.pageY - canvas.clientTop;
+        console.log(mouseX + "," + mouseY);
+    }, false);
+    image.onload = function () {
+        var x = 200, y = 220,mx=mouseX;
+        setInterval(function() {
+            context.clearRect(0, 0, 400, 200);
+            context.save();
+            context.translate(x, y);
+            if ((Math.abs(x-mouseX))>=6){
+                console.log("on my way!");
+                x=x-5*(Math.abs(x-mouseX)/(x-mouseX));
+            };
+            if ( (Math.abs(y-mouseY)^2)>=6){
+                console.log("on my way!");
+                y=y-5*(Math.abs(y-mouseY)/(y-mouseY));
+            };
+            context.drawImage(image, 0, 0);
+            context.restore();
+        }, 1000 / 60);
+    };
+*/
+
+
+
+</script>
+</body>
+</html>
