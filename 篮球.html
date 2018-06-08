@@ -18,19 +18,44 @@
     var ball_x = 100,
         ball_y = 250,
         ball_r = 20;//篮球ball圆心坐标,半径
-    var v_x = 2,
+    var v_x = 0,
         v_y = 1;//球分解速度
     var g   = 1;//重力加速度
+    var wind   = 0.5;//台风横向加速度
     var af  = 5;//空气阻力
     var groundy = 500;//地面y值
     var t = 0;//时间
+    var mouseX,mouseY;//鼠标点击坐标
+
+    var LevelMove;//水平移动真假判断
+
 
 
 
     //点击鼠标触发弹起
     canvas.addEventListener("mousedown", function (e) {
-        console.log("mousedown");
+        //console.log("mousedown");
+        v_y = 15;
+        mouseX = e.pageX - canvas.clientLeft;
+        mouseY = e.pageY - canvas.clientTop;
+        console.log(mouseX + "," + mouseY);
+
+        LevelMove = true;
+        v_x = 10;
+        console.log(" now should LEVEL MOVE")
+
     }, false);
+
+    //水平移动
+    var level_move = function(){
+        if (LevelMove) {
+            console.log("LEVEL MOVE!!!")
+            var lor = (mouseX > ball_x)?(1):(-1);
+            ball_x += lor * v_x;
+            v_x -= wind;
+            if (v_x <= 0) {LevelMove = false}
+        }
+    };
 
     var BBU = function(){
         //Ball Bounce Up
@@ -39,7 +64,8 @@
         ball_y -=  ((v_y * 1 ));
         v_y -= (g * 1);
         if (ball_y>=groundy){
-            v_y = -v_y-1;
+            //v_y = -v_y-1;
+            v_y = 20;
         }
     }
 
@@ -53,7 +79,7 @@
 
 
     var ball = new Image();
-    ball.src = "big_face.png";
+    ball.src = "face.png";
     ball.onload = function () {
         width = ball.width;
         height = ball.height;
@@ -62,57 +88,20 @@
             //数据显示
             context.fillText("Ball_y: "+ball_y,20,20);
             context.fillText("v_y: "+v_y,20,120);
-            console.log("v_y: "+v_y);
+            //console.log("v_y: "+v_y);
 
             context.save();
-            context.translate(ball_x, ball_y);
+            //context.translate(ball_x, ball_y);
 
 
             BBU();
+            level_move();
             t++;
 
-            context.drawImage(ball, 0, 0, 290,285,0,0,100,98);
+            context.drawImage(ball, 0, 0, 290,285,ball_x,ball_y,100,98);
             context.restore();
         }, 1000 / 60*1);
     };
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    canvas.addEventListener("mousedown", function (e) {
-        mouseX = e.pageX - canvas.clientLeft;
-        mouseY = e.pageY - canvas.clientTop;
-        console.log(mouseX + "," + mouseY);
-    }, false);
-    image.onload = function () {
-        var x = 200, y = 220,mx=mouseX;
-        setInterval(function() {
-            context.clearRect(0, 0, 400, 200);
-            context.save();
-            context.translate(x, y);
-            if ((Math.abs(x-mouseX))>=6){
-                console.log("on my way!");
-                x=x-5*(Math.abs(x-mouseX)/(x-mouseX));
-            };
-            if ( (Math.abs(y-mouseY)^2)>=6){
-                console.log("on my way!");
-                y=y-5*(Math.abs(y-mouseY)/(y-mouseY));
-            };
-            context.drawImage(image, 0, 0);
-            context.restore();
-        }, 1000 / 60);
-    };
-*/
-
 
 
 </script>
