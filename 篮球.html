@@ -28,6 +28,7 @@
     var mouseX,mouseY;//鼠标点击坐标
 
     var LevelMove;//水平移动真假判断
+    var lor;
 
 
 
@@ -39,10 +40,10 @@
         mouseX = e.pageX - canvas.clientLeft;
         mouseY = e.pageY - canvas.clientTop;
         console.log(mouseX + "," + mouseY);
-
         LevelMove = true;
+        lor = (mouseX > ball_x)?(1):(-1);
         v_x = 10;
-        console.log(" now should LEVEL MOVE")
+        //console.log(" now should LEVEL MOVE")
 
     }, false);
 
@@ -50,7 +51,6 @@
     var level_move = function(){
         if (LevelMove) {
             console.log("LEVEL MOVE!!!")
-            var lor = (mouseX > ball_x)?(1):(-1);
             ball_x += lor * v_x;
             v_x -= wind;
             if (v_x <= 0) {LevelMove = false}
@@ -69,15 +69,6 @@
         }
     }
 
-
-
-    var CBBU = function(){
-        //Click then Ball Bounce Up 
-        //点击后篮球弹起
-        
-    }
-
-
     var ball = new Image();
     ball.src = "face.png";
     ball.onload = function () {
@@ -91,8 +82,9 @@
             //console.log("v_y: "+v_y);
 
             context.save();
-            //context.translate(ball_x, ball_y);
-
+            //context.translate(ball_x-50, ball_y-49);
+            ball.rotate((Math.PI/180)*t)
+            //context.translate(0,0);
 
             BBU();
             level_move();
