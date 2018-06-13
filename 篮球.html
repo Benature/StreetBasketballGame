@@ -63,7 +63,7 @@
         //ball_y -=  ((v_y * t + 0.5 * g * t*t));
         ball_y -=  ((v_y * 1 ));
         v_y -= (g * 1);
-        if (ball_y>=groundy){
+        if (ball_y >= groundy){
             //v_y = -v_y-1;
             v_y = 20;
         }
@@ -83,7 +83,7 @@
 
             context.save();
             //context.translate(ball_x-50, ball_y-49);
-            ball.rotate((Math.PI/180)*t)
+            //ball.rotate((Math.PI/180)*t)
             //context.translate(0,0);
 
             BBU();
@@ -92,6 +92,33 @@
 
             context.drawImage(ball, 0, 0, 290,285,ball_x,ball_y,100,98);
             context.restore();
+
+            //以下为碰撞判断
+            var between_x = (ball_x >= bbd_x) && (ball_x <= (bbd_x+bbd_w))
+            var between_y = (ball_y <= bbd_y)&&(ball_y >= (bbd_y-bbd_h))
+            var topclip = ((ball_y <= bbd_y+ball_r) && (between_x))
+            var downclip = ((between) && (ball_y >= (bbd_y-ball_r)))
+            //四角距离判定
+            var distance = function(x,y){
+                return (x-ball_x)*(x-ball_x) + (y-ball_y)*(y-ball_y)
+            }
+            var r_squar = ball_r*ball_r
+            var connerClip_x = (distance(bbd_x,bbd_y) < r_squar) || (distance(bbd_x,bbd_y-bbd_h) < r_squar)
+            var connerClip_y = (distance(bbd_x + bbd_w,bbd_y) < r_squar) || (distance(bbd_x + bbd_w) < r_squar)
+            if (between_x && between_y){
+                v_x= -(v_x-5)
+            }
+            else if ((!between_y) && (topclip)){
+                v_y = -(v_y-5)
+            }
+            else if ((!between_y) && (downclip)){
+                v_y = -(v_y + 5)
+            }
+            else if (connerClip_x || connerClip_y){
+                v_x = -v_x
+                v_y = -v_y
+            }
+            //篮板碰撞模块结束
         }, 1000 / 60*1);
     };
 
