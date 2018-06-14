@@ -119,6 +119,23 @@
                 v_y = -v_y
             }
             //篮板碰撞模块结束
+            //篮框碰撞 直接上点碰撞且只有一种处理
+            if ((distance(bkt_x-r,bkt_y) <= r_squar) || (distance(bkt_x+r) <= r_squar)){
+                if ((ball_x <= bkt_x-bkt_r) && (ball_y >= bkt_y)){
+                    v_x = -(v_x-5)
+                    v_y = -(v_y-8)
+                }
+                else if ((ball_x <= bkt_x-bkt_r) && (ball_y <= bkt_y)){
+                    //v_x = random left or right
+                    v_y = -v_y
+                }
+                else if ((ball_x >= bkt_x-bkt_r) && (ball_y >= bkt_y)){
+                    v_x = -(v_x-8)
+                    v_y = -(v_y-5)
+                }
+                
+            }
+
         }, 1000 / 60*1);
     };
 
