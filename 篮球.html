@@ -66,7 +66,7 @@
         //ball_y -=  ((v_y * t + 0.5 * g * t*t));
         ball_y -=  ((v_y * 1 ));
         v_y -= (g * 1);
-        if (ball_y>=groundy){
+        if (ball_y >= groundy){
             //v_y = -v_y-1;
             v_y = 20;
         }
@@ -97,8 +97,7 @@
             },1000 / 60 * i)
         }*/
     var ball = new Image();
-    
-    ball.src = "face.png";
+    ball.src = "ball.png";
     ball.onload = function () {
         width = ball.width;
         height = ball.height;
@@ -118,24 +117,81 @@
                 context.drawImage(propsimage,0,0,290,285,propsplace_x2,propsplace_y2,100,98);
               }
             //console.log("v_y: "+v_y);
-
+        
             context.save();
-            //context.translate(ball_x-50, ball_y-49);
-            //ball.rotate((Math.PI/180)*t)
-            //context.translate(0,0);
+            context.translate(ball_x, ball_y);
+            //context.drawImage(ball, 0, 0, 290,285,0,0,100,98);
+
+            context.rotate((Math.PI/180)*t*10)
+            context.drawImage(ball, 0, 0, 250,250,-50,-50,100,100);
+            /*
+            context.beginPath();
+            context.arc(0, 0, 50, 0, 360 * Math.PI / 180, true);
+            context.moveTo(0, 0);
+            context.lineTo(0, 50);
+            context.stroke();
+            */
+            context.rotate(-(Math.PI/180)*t*10)
+            
+
+            //context.fillRect(0-25, 0-24.5, width, height);
+
+            //context.drawImage(ball, 0, 0, 290,285,0,0,100,98);
+
+            context.translate(-ball_x,-ball_y);
 
             BBU();
             
             level_move();
             t++;
 
-
-            
-
-
-        
-            context.drawImage(ball, 0, 0, 290,285,ball_x,ball_y,100,98);
+            //context.drawImage(ball, 0, 0, 290,285,ball_x,ball_y,100,98);
+            //context.drawImage(ball, 0, 0, 290,285,200,200,100,98);
             context.restore();
+
+            //以下为碰撞判断
+            var between_x = (ball_x >= bbd_x) && (ball_x <= (bbd_x+bbd_w))
+            var between_y = (ball_y <= bbd_y)&&(ball_y >= (bbd_y-bbd_h))
+            var topclip = ((ball_y <= bbd_y+ball_r) && (between_x))
+            var downclip = ((between) && (ball_y >= (bbd_y-ball_r)))
+            //四角距离判定
+            var distance = function(x,y){
+                return (x-ball_x)*(x-ball_x) + (y-ball_y)*(y-ball_y)
+            }
+            var r_squar = ball_r*ball_r
+            var connerClip_x = (distance(bbd_x,bbd_y) < r_squar) || (distance(bbd_x,bbd_y-bbd_h) < r_squar)
+            var connerClip_y = (distance(bbd_x + bbd_w,bbd_y) < r_squar) || (distance(bbd_x + bbd_w) < r_squar)
+            if (between_x && between_y){
+                v_x= -(v_x-5)
+            }
+            else if ((!between_y) && (topclip)){
+                v_y = -(v_y-5)
+            }
+            else if ((!between_y) && (downclip)){
+                v_y = -(v_y + 5)
+            }
+            else if (connerClip_x || connerClip_y){
+                v_x = -v_x
+                v_y = -v_y
+            }
+            //篮板碰撞模块结束
+            //篮框碰撞 直接上点碰撞且只有一种处理
+            if ((distance(bkt_x-r,bkt_y) <= r_squar) || (distance(bkt_x+r) <= r_squar)){
+                if ((ball_x <= bkt_x-bkt_r) && (ball_y >= bkt_y)){
+                    v_x = -(v_x-5)
+                    v_y = -(v_y-8)
+                }
+                else if ((ball_x <= bkt_x-bkt_r) && (ball_y <= bkt_y)){
+                    //v_x = random left or right
+                    v_y = -v_y
+                }
+                else if ((ball_x >= bkt_x-bkt_r) && (ball_y >= bkt_y)){
+                    v_x = -(v_x-8)
+                    v_y = -(v_y-5)
+                }
+                
+            }
+
         }, 1000 / 60*1);
         
 
