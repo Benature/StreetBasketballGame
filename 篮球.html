@@ -5,7 +5,7 @@
     <meta charset="utf-8">
 </head>
 <body>
-<canvas id="myCanvas1" width="1000" height="1240" style="border:solid;position: absolute;z-index: 0">
+<canvas id="myCanvas1" width="1500" height="700" style="border:solid;position: absolute;z-index: 0">
     你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
 </canvas>
 
@@ -14,18 +14,19 @@
     var context = canvas.getContext("2d");
     context.font = "20px Arial";
     
-    var ball={x:100,y:250,r:20};//篮球ball圆心坐标,半径
+    var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
     var v_x = 0,
         v_y = 1;//球分解速度
+    var fre=0.5;//帧率
     var g   = 1;//重力加速度
     var wind   = 0.5;//台风横向加速度
     var af  = 5;//空气阻力
-    var groundy = 500;//地面y值
-    var t = 0;//时间
+    var groundy = 600;//地面y值
+    var t = 0;//时间(迭代)
     var mouseX,mouseY;//鼠标点击坐标
 
     var LevelMove;//水平移动真假判断
-    var lor;
+    var lor;//判断水平移动左右
     var propsplace = {
         x1:0,y1:0,//小道具的随机xy坐标
         x2:0,y2:0,//保存小道具坐标的变量；
@@ -33,6 +34,8 @@
         draw:true,//小道具是否出现
         t:5//小道具停留时间；
     };
+    var ghost_x = new Array();
+    var ghost_y = new Array();
 
 
     //点击鼠标触发弹起
@@ -41,9 +44,9 @@
         v_y = 15;
         mouseX = e.pageX - canvas.clientLeft;
         mouseY = e.pageY - canvas.clientTop;
-        console.log(mouseX + "," + mouseY);
+        //console.log(mouseX + "," + mouseY);
         LevelMove = true;
-        lor = (mouseX > ball.x)?(1):(-1);
+        lor = (mouseX > ball.x-ball.r)?(1):(-1);
         v_x = 10;
         //console.log(" now should LEVEL MOVE")
 
@@ -52,9 +55,9 @@
     //水平移动
     var level_move = function(){
         if (LevelMove) {
-            console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x;
-            v_x -= wind;
+            //console.log("LEVEL MOVE!!!")
+            ball.x += lor * v_x*fre;
+            v_x -= wind*fre;
             if (v_x <= 0) {LevelMove = false}
         }
     };
@@ -64,12 +67,40 @@
         //Ball Bounce Up
         //篮球自己弹起来
         //ball.y -=  ((v_y * t + 0.5 * g * t*t));
-        ball.y -=  ((v_y * 1 ));
-        v_y -= (g * 1);
+        ball.y -=  ((v_y * fre ));
+        v_y -= (g * fre);
         if (ball.y >= groundy){
             //v_y = -v_y-1;
-            v_y = 20;
+            v_y = 25;
         }
+    }
+
+    //篮球残影
+    var ghost = function(){
+        //记录坐标集合 
+        if (t<=1*ball.r){
+                ghost_x[t]=ball.x;
+                ghost_y[t]=ball.y;
+            }
+            else{
+                //坐标数据迭代退位
+                for (var n = 0; n < 1*ball.r; n++){
+                    ghost_x[n] = ghost_x[n+1];
+                    ghost_y[n] = ghost_y[n+1];
+                }
+                //末位数据留给最新坐标
+                ghost_x[1*ball.r]=ball.x;
+                ghost_y[1*ball.r]=ball.y;
+            }
+            //画残影
+            for (var i = 0; i <= ball.r; i++){
+                context.beginPath();
+                for (var n = 0; n < 1; n++){
+                context.arc(ghost_x[1*i+n],ghost_y[1*i+n],i+1/1*n, 0, 360 * Math.PI / 180, true);
+                }
+                context.fillStyle = 'rgba(239, 129, 32, 0.1)';
+                context.fill();
+            }
     }
     var propsimage = new Image();
     propsimage.src ="face.png";
@@ -114,13 +145,13 @@
             //console.log("v_y: "+v_y);
         
             context.save();
-
+            ghost();
             //篮球旋转
             context.translate(ball.x, ball.y);
-            context.rotate((Math.PI/180)*t*10)
-            context.drawImage(ball_img, 0, 0, 250,250,-50,-50,100,100);
+            context.rotate((Math.PI/180)*t*1)
+            context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,80,80);
             /*context.beginPath();context.arc(0, 0, 50, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, 50);context.stroke();*/
-            context.rotate(-(Math.PI/180)*t*10)
+            context.rotate(-(Math.PI/180)*t*1)
             context.translate(-ball.x,-ball.y);
 
             BBU();
@@ -130,18 +161,16 @@
               props();
                propsplace.x2 = propsplace.x1;
                propsplace.y2 = propsplace.y1;
-               }
-         
-                else if(  t_i < 55 && t_i >= 55 - propsplace.t){
-               //context.drawImage(propsimage,0,0,290,285,propsplace.x2,propsplace.y2,100,100);
-               
+            }
+            else if(  t_i < 55 && t_i >= 55 - propsplace.t && propsplace.draw){
+                //context.drawImage(propsimage,0,0,290,285,propsplace.x2,propsplace.y2,100,100);  
                 propsplace.distance  =   Math.sqrt(Math.pow( ball.x - propsplace.x2,2) + Math.pow(ball.y - propsplace.y2,2) ); 
-                if (propsplace.distance >= 100 && propsplace.draw){
-                    console.log("LLLLLLLLL")
+                if (propsplace.distance >= 100 ){
+                    console.log("drawing the prop")
                     context.drawImage(propsimage,0,0,290,285,propsplace.x2,propsplace.y2,100,100);
                     
               }
-                else if (propsplace.distance < 100){propsplace.draw=false}
+                else if (propsplace.distance < 100){propsplace.draw=false;console.log("touched the prop!")}
                 }
                 
             t++;
@@ -149,7 +178,7 @@
             //context.drawImage(ball, 0, 0, 290,285,ball.x,ball.y,100,98);
             //context.drawImage(ball, 0, 0, 290,285,200,200,100,98);
             context.restore();
-
+/*
             //以下为碰撞判断
             var between_x = (ball.x >= bbd_x) && (ball.x <= (bbd_x+bbd_w))
             var between_y = (ball.y <= bbd_y)&&(ball.y >= (bbd_y-bbd_h))
@@ -191,9 +220,9 @@
                     v_y = -(v_y-5)
                 }
                 
-            }
+            }*/
 
-        }, 1000 *1/ 60*1);
+        }, 1000 *1/ (60*4));
         
 
     };
