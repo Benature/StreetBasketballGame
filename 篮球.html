@@ -14,6 +14,7 @@
     var context = canvas.getContext("2d");
     context.font = "20px Arial";
     
+    
     var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
     var v_x = 0,
         v_y = 1;//球分解速度
@@ -34,8 +35,9 @@
     var propsplace_x2;//保存小道具坐标的变量；
     var propsplace_y2;
     var p_distance;//小道具与球的中心距离；
-    var hua = true;
-    var hua2 = false;
+    var p_draw = true;
+    //var p_add = false;
+    var p_exist = false;
     var propstrigger;
     var t_iplus = 0;//道具加时。
     var t_i0 ;
@@ -110,11 +112,6 @@
     var propsimage = new Image();
     propsimage.src ="clock.png";
     
-    var props = function (){
-         propsplace_x1 =  Math.random() * 200 + 100;//小道具的随机xy坐标
-         propsplace_y1=  Math.random() * 200 + 100;
-         context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
-    }
 
     var ball_img = new Image();
     ball_img.src = "ball.png";
@@ -153,9 +150,10 @@
         setInterval(function () {
             context.clearRect(0, 0, 1500, 700);
             //数据显示
+            context.fillStyle ="black";
             context.fillText("ball.y: "+ball.y,20,20);
             context.fillText("v_y: "+v_y,20,120);
-            var t_i = 60-Math.ceil(t/60);
+            var t_i = 60-Math.ceil(t/180 );
            
             //给界面加一个整数计时器。
             var t_itotal = t_i + t_iplus;
@@ -187,39 +185,39 @@
             collision();
             level_move();
             
-           propstrigger = Math.ceil(Math.random() * 200);
-            console.log(propstrigger);
-            hua = true;
-            if(propstrigger === 199  ){
-              props();
-               propsplace_x2 = propsplace_x1;
-               propsplace_y2 = propsplace_y1;
-                t_i0 = t_i;
-               }
-         
-                else if(   t_i >= t_i0 - 3){
-               
-               
-                p_distance  =   Math.sqrt(Math.pow( ball_x - propsplace_x2,2) + Math.pow(ball_y - propsplace_y2,2) ); 
-                if (p_distance >= 100 && hua){
-                    context.drawImage(propsimage,0,0,300,300,propsplace_x2,propsplace_y2,100,100);
-                    
-              }
-                else if (p_distance < 100){hua = false}
+           propstrigger = Math.ceil(Math.random() * 1000);
+           //console.log(propstrigger);
+            
+            if(propstrigger === t_i ){
+                p_exist = true;
+                t_i0 = t_i  ;
+                //console.log("prop is exist") ;   
+            }
+            else if(t_i >= t_i0 - 0.5 && p_exist){
+                propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
+                propsplace_y1 = Math.random() * 200 + 100;
+                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
+                //console.log("randoming");
+            }
+            else if((t_i <= t_i0 -0.5) && (t_i >= t_i0 - propstime) && p_exist ){
+                p_distance  =  Math.sqrt(Math.pow( ball.x - propsplace_x1,2) + Math.pow(ball.y - propsplace_y1,2) ); 
+                if (p_distance >= 100 && p_draw){
+                    context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
                 }
+                else if (p_distance < 100){p_draw = false}
+
+                if (p_draw === false){
+                t_iplus += 3;
+                p_exist = false;
+                p_draw = true;
+                //console.log("add time")  
+                }
+            }
                 
+            
             t++;
             
-           if (hua === false && hua2 === false){
-                t_iplus += 3;
-                hua2 === true;
-
-                
-            }
-            if (p_distance >= 100 ){
-                
-                hua2 = false;
-            }
+           
             
 
             //context.drawImage(ball, 0, 0, 290,285,ball.x,ball.y,100,98);
