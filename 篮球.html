@@ -12,7 +12,7 @@
 <script type="text/javascript">
     var canvas = document.getElementById("myCanvas1");
     var context = canvas.getContext("2d");
-    context.font = "20px Arial";
+    
     
     
     var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
@@ -36,11 +36,11 @@
     var propsplace_y2;
     var p_distance;//小道具与球的中心距离；
     var p_draw = true;
-    //var p_add = false;
+    var p_word = false;
     var p_exist = false;
     var propstrigger;
     var t_iplus = 0;//道具加时。
-    var t_i0 ;
+    var t_i0 ,t_i1;
     var ghost_x = new Array();
     var ghost_y = new Array();
 
@@ -150,6 +150,7 @@
         setInterval(function () {
             context.clearRect(0, 0, 1500, 700);
             //数据显示
+            context.font = "20px Arial";
             context.fillStyle ="black";
             context.fillText("ball.y: "+ball.y,20,20);
             context.fillText("v_y: "+v_y,20,120);
@@ -190,6 +191,7 @@
             
             if(propstrigger === t_i ){
                 p_exist = true;
+                p_word = false;
                 t_i0 = t_i  ;
                 //console.log("prop is exist") ;   
             }
@@ -208,12 +210,19 @@
 
                 if (p_draw === false){
                 t_iplus += 3;
+                t_i1 = t_i;
+                
+                p_word = true;
                 p_exist = false;
                 p_draw = true;
                 //console.log("add time")  
                 }
             }
-                
+            if (t_i >= t_i1 - 1 && p_word){
+                context.strokeStyle ="orange";
+                context.font = "40px Arial";
+                context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-60);
+            }
             
             t++;
             
