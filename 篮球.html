@@ -57,7 +57,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x ;
+            ball.x += lor * v_x *fre;
             v_x -= wind;
             if (v_x <= 0) {LevelMove = false}
         }
@@ -147,7 +147,7 @@
     
     //请开始我们的表演
         setInterval(function () {
-            context.clearRect(0, 0, 1000, 1240);
+            context.clearRect(0, 0, 1500, 700);
             //数据显示
             context.fillText("ball.y: "+ball.y,20,20);
             context.fillText("v_y: "+v_y,20,120);
@@ -203,7 +203,7 @@
             
 
         
-        }, 1000 *1/ 60*1);
+        }, 1000 *1/ (60*3));
         
 
     };
