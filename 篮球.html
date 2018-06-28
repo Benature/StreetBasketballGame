@@ -23,7 +23,7 @@
     var fre=0.5;//帧率
     var g   = 1;//重力加速度
     var wind_v = 0.0;//台风横向加速度
-    var airf  = 0.5;//空气阻力
+    var airf  = 0.05;//空气阻力
     var groundy = 600;//地面y值
     var t = 0;//时间(迭代)
     var mouseX,mouseY;//鼠标点击坐标
@@ -57,13 +57,41 @@
         //console.log("keydown");
         console.log(e.keyCode);
         if (e.keyCode==67){backdoor.clock = true;
-            console.log("backdoor: clock")
+            console.log("backdoor: clock");
         }
         else if (e.keyCode==69){gameover = true;
-            console.log("backdoor: gameover")
+            console.log("backdoor: gameover");
         }
         else if (e.keyCode==87){backdoor.wind = true;
-            console.log("backdoor: wind")
+            console.log("backdoor: wind");
+        }
+        else if (e.keyCode==82){//重置布尔值
+            gamebegin = false;
+            gameover = false;
+            clock_on = false;
+            wind.on = false;
+            p_draw = true;
+            p_word = false;
+            p_exist = false;
+            t_iplus = 0;
+            wind.blow = false;
+            console.log("backdoor: re game");
+        }
+        else if (e.keyCode == 37){
+            v_y = 15;
+            LevelMove = true;
+            back = 1;
+            lor = -1;
+            v_x = 5;
+            gamebegin = true;
+        }
+        else if (e.keyCode == 39){
+            v_y = 15;
+            LevelMove = true;
+            back = 1;
+            lor = 1;
+            v_x = 5;
+            gamebegin = true;
         }
         
     }, false);
@@ -71,16 +99,15 @@
     //点击鼠标触发弹起
     canvas.addEventListener("mousedown", function (e) {
         //console.log("mousedown");
-        var back_y = 1
         v_y = 15;
         mouseX = e.pageX - canvas.clientLeft;
         mouseY = e.pageY - canvas.clientTop;
         //console.log(mouseX + "," + mouseY);
         LevelMove = true;
-        back = 1
+        back = 1;
         lor = (mouseX >= ball.x)?(1):(-1);
         //console.log("lor"+lor);
-        v_x = 10;
+        v_x = 5;
         //console.log(" now should LEVEL MOVE")
         gamebegin = true;
     }, false);
@@ -89,7 +116,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre*1 + wind_v*fre;
+            ball.x += lor * v_x *fre*1 + wind_v*fre*0.1;
             v_x -= airf;
             if (v_x <= 0) {LevelMove = false}
         }
@@ -166,8 +193,10 @@
     var begin_interface = function(){
         context.drawImage(background_begin, 0, 0, 750,563,0,-200,1500,1126);
         context.font = "100px Arial";
-        context.fillStyle ="white";
-        context.fillText("街头土味篮球",450,400);
+        context.strokeStyle ="pink";
+        context.fillStyle ="orange  ";
+        context.fillText("中珠街头土味篮球",400,400);
+        context.strokeText("中珠街头土味篮球",400,400);
         context.font = "50px Arial";
         context.fillStyle ="purple";
         context.fillText("点击鼠标以开始",500,500);
@@ -176,8 +205,13 @@
     var end_interface = function(){
         context.drawImage(background_over, 0, 0, 750,563,0,-200,1500,1126);
         context.font = "100px Arial";
+        context.strokeStyle ="white";
         context.fillStyle ="red";
         context.fillText("GAME OVER",480,400);
+        context.strokeText("GAME OVER",480,400);
+        context.font = "30px Arial";
+        context.fillStyle ="pink";
+        context.fillText("点击R重新开始游戏",600,500);
     }
     
     //时钟道具特效
@@ -224,9 +258,9 @@
         else if(t_i <= t_i0-propstime-5){clock_on=false;};//道具冷却
 
         //文字效果
-        if (t_i >= t_i1 - 5 && p_word){
+        if (t_i >= t_i1 - 1 && p_word){
             context.strokeStyle ="orange";
-            context.font = "30px Arial";
+            context.font = "20px Arial";
             context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
             //console.log("print the clock")
         }
@@ -253,9 +287,20 @@
         }
         //出现台风并持续
         else if((t_i >= wind.t - wind.keep) && wind.blow ){
+            context.strokeStyle ="purple";
             context.fillStyle ="purple";
-            context.font = "15px Arial";
-            context.fillText("挂台风辣!",200,150);
+            context.font = "50px Arial";
+            context.strokeText("中珠又刮台风辣!",200,50);
+            context.fillText("中珠又刮台风辣!",200,50);
+            context.font = "30px Arial";
+            if (wind_v>0){
+                context.strokeText("→"+wind_v+"级鸭大魔法飓风",600,50);
+                context.fillText("→"+wind_v+"级鸭大魔法飓风",600,50);
+            }
+            if (wind_v<0){
+                context.strokeText("←"+(-wind_v)+"级鸭大魔法飓风",600,50);
+                context.fillText("←"+(-wind_v)+"级鸭大魔法飓风",600,50);
+            }
         }
         else{
             wind.blow = false;
@@ -311,23 +356,23 @@
             context.clearRect(0, 0, 1500, 700);
             context.save();
             //游戏开始界面
-            if (!gamebegin){begin_interface();}
+            if (!gamebegin){begin_interface();t=0}
             else if (gamebegin && !gameover){
                 //背景图
                 context.drawImage(background, 0, 0, 750,563,0,-200,1500,1126);
                 //数据显示
                 context.font = "20px Arial";
                 context.fillStyle ="black";
-                context.fillText("ball.y: "+ball.y,20,20);
-                context.fillText("v_y: "+v_y,20,120);
-                context.fillText("台风风向→: "+wind_v,120,120);
+                //context.fillText("ball.y: "+ball.y,20,20);
+                //context.fillText("v_y: "+v_y,20,120);
+                //context.fillText("台风风向→: "+wind_v,20,30);
                 
                 t_i = 60-Math.ceil(t/180 );
             
                 {//给界面加一个整数计时器。
                 t_itotal = t_i + t_iplus;
-                context.fillText("时间:" + t_itotal,20,200) ;
-                context.fillText("距离" + p_distance,100,200) ;
+                context.fillText("时间:" + t_itotal,20,40) ;
+                //context.fillText("距离" + p_distance,100,200) ;
                 }
                 //判断游戏结束
                 if (t_itotal<=0){
