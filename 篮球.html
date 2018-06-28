@@ -50,6 +50,7 @@
     var gameover = false;//游戏是否结束
     var gamebegin = false;//游戏是否开始
     var backdoor = {clock:false,wind:false}//后门
+    
 
     //键盘后门
     document.addEventListener("keydown", function (e) {
@@ -274,12 +275,14 @@
         return distances; 
         }*/
     
-
+        var boardbasic = {x:100, y:100};
+        var board = {x:500,y:200,w:25,h:200};
+        var boardheart = {x:500,y:500}
     var collision = function (){
         //单纯粗糙的碰板
-        var board = {x:500,y:200,w:25,h:200};
         var between_x=(ball.x + ball.r > board.x) && (ball.x - ball.r < board.x + board.w);
         var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
+        
         if (between_x && between_y){
             back = -1.5*back;
             v_y = -1*v_y
