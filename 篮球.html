@@ -200,7 +200,7 @@
         else if(t_i >= t_i0 - 0.5 && p_exist){
             propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
             propsplace_y1 = Math.random() * 200 + 100;
-            context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,propsplace_x1/2,propsplace_y1/2);
+            context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,Math.random() * 100,Math.random() * 100);
             //console.log("randoming");
         }
         //道具定格,等待触发
@@ -300,7 +300,7 @@
     //----------------------------------------//
     //----------------------------------------//
     var ball_img = new Image();
-    ball_img.src = "ball.png";
+    ball_img.src = "ball2.png";
     var background = new Image();
     background.src = "background.jpg";
     var background_begin = new Image();
