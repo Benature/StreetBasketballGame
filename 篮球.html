@@ -5,7 +5,6 @@
     <meta charset="utf-8">
 </head>
 <body>
-<script type="text/javascript" src="hello.js"></script>
 <canvas id="myCanvas1" width="1500" height="700" style="border:solid;position: absolute;z-index: 0">
     你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
 </canvas>
@@ -22,7 +21,7 @@
         v_y = 1;//球分解速度
     var fre=0.5;//帧率
     var g   = 1;//重力加速度
-    var wind   = 0.5;//台风横向加速度
+    var wind_v = 0.0;//台风横向加速度
     var airf  = 0.5;//空气阻力
     var groundy = 600;//地面y值
     var t = 0;//时间(迭代)
@@ -48,8 +47,18 @@
     var shadow_rate = 0;//影子缩放比例
     var gameover = false;//游戏是否结束
     var gamebegin = false;//游戏是否开始
+    var backdoor = {clock:false,wind:false}//后门
 
-
+    //键盘后门
+    document.addEventListener("keydown", function (e) {
+        //console.log("keydown");
+        console.log(e.keyCode);
+        if (e.keyCode=="67"){
+            //prop_clock();
+            backdoor.clock = true;
+            console.log("backdoor: clock")
+        }
+    }, false);
 
     //点击鼠标触发弹起
     canvas.addEventListener("mousedown", function (e) {
@@ -71,7 +80,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre;
+            ball.x += lor * v_x *fre*0.1 + wind_v*fre;
             v_x -= airf;
             if (v_x <= 0) {LevelMove = false}
         }
@@ -163,14 +172,14 @@
     }
     //时钟道具特效
     var prop_clock = function(){
-        propstrigger = Math.ceil(Math.random() * 1000);
+        //propstrigger = Math.ceil(Math.random() * 1000);
         //console.log(propstrigger);
         //随机开始道具
-        if(propstrigger === t_i ){
+        if(propstrigger === t_i || backdoor.clock){
             p_exist = true;
             p_word = false;
             t_i0 = t_i  ;
-            //console.log("prop is exist") ;   
+            console.log("prop is exist") ;   
         }
         //道具出现乱晃
         else if(t_i >= t_i0 - 0.5 && p_exist){
@@ -186,6 +195,7 @@
                 context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
             }
             else if (p_distance < 100){p_draw = false}
+            
             //道具效果触发
             if (p_draw === false){
             t_iplus += 3;
@@ -196,11 +206,13 @@
             //console.log("add time")  
             }
             //文字效果
-            if (t_i >= t_i1 - 1 && p_word){
+            if (t_i >= t_i1 - 5 && p_word){
                 context.strokeStyle ="orange";
                 context.font = "30px Arial";
                 context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
+                console.log("print the clock")
             }
+            else{p_word = false;backdoor.clock=false;}
         }
     }
 
@@ -208,47 +220,27 @@
     var wind = {
         trigger:0,
         blow:false,
-        word:false
+        t:0,//台风触发时间记录
+        keep:10
     };
     var prop_wind = function(){
         wind.trigger = Math.ceil(Math.random() * 1000);
-        //console.log(wind.trigger);
-        //随机开始道具
+        //wind.trigger = 55;
         if(wind.trigger === t_i ){
             wind.blow = true;
-            wind.word = false;
-            t_i0 = t_i  ;
-            //console.log("prop is exist") ;   
+            wind.t = t_i  ;
         }
-        //道具出现乱晃
-        else if(t_i >= t_i0 - 0.5 && wind.blow){
-            propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
-            propsplace_y1 = Math.random() * 200 + 100;
-            context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
-            //console.log("randoming");
+        //出现台风
+        else if((t_i >= wind.t - wind.keep) && wind.blow ){
+            wind_v = 3;
+            context.fillStyle ="purple";
+            context.font = "15px Arial";
+            context.fillText("挂台风辣!",200,150);
         }
-        //道具定格,等待触发
-        else if((t_i <= t_i0 -0.5) && (t_i >= t_i0 - propstime) && p_exist ){
-            p_distance  =  Math.sqrt(Math.pow( ball.x - propsplace_x1,2) + Math.pow(ball.y - propsplace_y1,2) ); 
-            if (p_distance >= 100 && p_draw){
-                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
-            }
-            else if (p_distance < 100){p_draw = false;}
-            //道具效果触发
-            if (p_draw === false){
-            t_iplus += 3;
-            t_i1 = t_i;  
-            wind.word = true;
+        else{
             wind.blow = false;
-            p_draw = true;
-            //console.log("add time")  
-            }
-            //文字效果
-            if (t_i >= t_i1 - 1 && wind.word){
-                context.strokeStyle ="orange";
-                context.font = "30px Arial";
-                context.strokeText("挂台风!",propsplace_x1-10,propsplace_y1-10);
-            }
+            wind_v = 0;
+            console.log("stop wind")
         }
     }
 
@@ -297,7 +289,9 @@
                 context.fillStyle ="black";
                 context.fillText("ball.y: "+ball.y,20,20);
                 context.fillText("v_y: "+v_y,20,120);
-                context.fillText("→ 台风风向: "+wind,120,120);
+                context.fillText("台风风向→: "+wind_v,120,120);
+                context.fillText("backdoor.clock: "+backdoor.clock+
+                "\t p_exist:"+p_exist,220,20);
                 t_i = 60-Math.ceil(t/180 );
             
                 {//给界面加一个整数计时器。
@@ -327,6 +321,7 @@
                 collision();//碰撞
                 level_move();//篮球水平移动
                 prop_clock();//闹钟道具
+                prop_wind();//台风
                 }
                 t++;//时间增加
 
