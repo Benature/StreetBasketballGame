@@ -19,10 +19,10 @@
     //var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
     var v_x = 0,
         v_y = 1;//球分解速度
-    var fre=0.5;//帧率
+    var fre=0.3;//帧率
     var g   = 1;//重力加速度
     var wind_v = 0.0;//台风横向加速度
-    var airf  = 0.05;//空气阻力
+    var airf  = 0.01;//空气阻力
     var groundy = 600;//地面y值
     var t = 0;//时间(迭代)
     var mouseX,mouseY;//鼠标点击坐标
@@ -139,28 +139,29 @@
         }
     }
     //篮球残影
+    var ghost_l = 2;
     var ghost = function(){
-        context.fillStyle = 'rgba(239, 129, 32, 0.1)';
+        context.fillStyle = 'rgba(239, 129, 32, 0.15)';
         //记录坐标集合 
-        if (t<=1*ball.r){
+        if (t<=ghost_l*ball.r){
                 ghost_x[t]=ball.x;
                 ghost_y[t]=ball.y;
             }
             else{
                 //坐标数据迭代退位
-                for (var n = 0; n < 1*ball.r; n++){
+                for (var n = 0; n < ghost_l*ball.r; n++){
                     ghost_x[n] = ghost_x[n+1];
                     ghost_y[n] = ghost_y[n+1];
                 }
                 //末位数据留给最新坐标
-                ghost_x[1*ball.r]=ball.x;
-                ghost_y[1*ball.r]=ball.y;
+                ghost_x[ghost_l*ball.r]=ball.x;
+                ghost_y[ghost_l*ball.r]=ball.y;
             }
             //画残影
             for (var i = 0; i <= ball.r; i++){
                 context.beginPath();
-                for (var n = 0; n < 1; n++){
-                context.arc(ghost_x[1*i+n],ghost_y[1*i+n],i+1/1*n, 0, 360 * Math.PI / 180, true);
+                for (var n = 0; n < ghost_l; n++){
+                context.arc(ghost_x[ghost_l*i+n],ghost_y[ghost_l*i+n],i+1/ghost_l*n, 0, 360 * Math.PI / 180, true);
                 }
                 context.fill();
             }
@@ -216,7 +217,7 @@
     //时钟道具特效
     var propsimage = new Image();
     var clock_on = false;
-    propsimage.src ="img/clock.png";
+    propsimage.src ="img/clock4.png";
     var prop_clock = function(){
         propstrigger = Math.ceil(Math.random() * 1000);
         //console.log(propstrigger);
@@ -231,16 +232,16 @@
         }
         //道具出现乱晃
         else if(t_i >= t_i0 - 0.5 && p_exist){
-            propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
-            propsplace_y1 = Math.random() * 200 + 100;
+            propsplace_x1 = Math.random() * 1000 + 100;//小道具的随机xy坐标
+            propsplace_y1 = Math.random() * 400 + 80;
             context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,Math.random() * 100,Math.random() * 100);
             //console.log("randoming");
         }
         //道具定格,等待触发
         else if((t_i <= t_i0 -0.5) && (t_i >= t_i0 - propstime) && p_exist ){
             p_distance  =  Math.sqrt(Math.pow( ball.x - propsplace_x1,2) + Math.pow(ball.y - propsplace_y1,2) ); 
-            if (p_distance >= 100 && p_draw){
-                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,50,50);
+            if (p_distance >= 80 && p_draw){
+                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,80,80);
             }
             else if (p_distance < 100){p_draw = false}
             
@@ -331,8 +332,8 @@
             v_y = -1*v_y;
             console.log('我撞上板了');
         }
-        if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = ture};
-        if (distances(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = ture};
+        if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = true};
+        if (distances(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = true};
 
         if ((connerCollision.c1) || (connerCollision.c2)){
             back = -1.5*back;
