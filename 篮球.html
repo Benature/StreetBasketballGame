@@ -14,7 +14,6 @@
     var context = canvas.getContext("2d");
     var canvas_width = document.getElementById("myCanvas1").width
     var canvas_height = document.getElementById("myCanvas1").height
-    console.log(canvas_width);
     
     var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
     //var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
@@ -311,18 +310,18 @@
     }
 
     //篮板碰撞
-    var distances = function (x,y){
-        distances = ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));
-        
-        return distances; 
-        }
+    var distances = function (x,y){return ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));}
     
+    var board_img = new Image();
+    board_img.src = "img/board.png";
     var boardbasic = {x:100, y:100};
     var board = {x:boardbasic.x + 173,y:boardbasic.y,w:40,h:400};
     var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y-393}
     var boardket = {x1:boardbasic.x + 21,y1:boardbasic.y-393,x2:boardbasic.x + 150,y2:boardbasic.y-393}
     var connerCollision = {c1:false , c2:false}
+
     var collision = function (){
+        context.drawImage(board_img, 0, 0, 600,600,board.x,board.y,300,300);
         //单纯粗糙的碰板
         var between_x=(ball.x + ball.r > board.x) && (ball.x - ball.r < board.x + board.w);
         var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
@@ -333,7 +332,7 @@
             console.log('我撞上板了');
         }
         if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = ture};
-        if (distance(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = ture};
+        if (distances(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = ture};
 
         if ((connerCollision.c1) || (connerCollision.c2)){
             back = -1.5*back;
