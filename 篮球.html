@@ -217,7 +217,7 @@
     //时钟道具特效
     var propsimage = new Image();
     var clock_on = false;
-    propsimage.src ="clock.png";
+    propsimage.src ="img/clock.png";
     var prop_clock = function(){
         propstrigger = Math.ceil(Math.random() * 1000);
         //console.log(propstrigger);
@@ -290,8 +290,8 @@
             context.strokeStyle ="purple";
             context.fillStyle ="purple";
             context.font = "50px Arial";
-            context.strokeText("中珠又刮台风辣!",200,50);
-            context.fillText("中珠又刮台风辣!",200,50);
+            context.strokeText("中珠又刮台风辣!",200,60);
+            context.fillText("中珠又刮台风辣!",200,60);
             context.font = "30px Arial";
             if (wind_v>0){
                 context.strokeText("→"+wind_v+"级鸭大魔法飓风",600,50);
@@ -342,13 +342,13 @@
     //----------------------------------------//
     //----------------------------------------//
     var ball_img = new Image();
-    ball_img.src = "ball2.png";
+    ball_img.src = "img/ball2.png";
     var background = new Image();
-    background.src = "background.jpg";
+    background.src = "img/background.jpg";
     var background_begin = new Image();
-    background_begin.src = "background_begin.jpg";
+    background_begin.src = "img/background_begin.jpg";
     var background_over = new Image();
-    background_over.src = "background_over.jpg";
+    background_over.src = "img/background_over.jpg";
     ball_img.onload = function () {
         //width = ball_img.width;
         //height = ball_img.height;
