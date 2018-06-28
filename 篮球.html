@@ -200,9 +200,10 @@
                 context.strokeStyle ="orange";
                 context.font = "30px Arial";
                 context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
-            
+            }
+        }
     }
-/*
+
     //台风效果
     var wind = {
         trigger:0,
@@ -232,7 +233,7 @@
             if (p_distance >= 100 && p_draw){
                 context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
             }
-            else if (p_distance < 100){p_draw = false}
+            else if (p_distance < 100){p_draw = false;}
             //道具效果触发
             if (p_draw === false){
             t_iplus += 3;
@@ -246,8 +247,10 @@
             if (t_i >= t_i1 - 1 && wind.word){
                 context.strokeStyle ="orange";
                 context.font = "30px Arial";
-                context.strokeText("挂台风辣!!!",propsplace_x1-10,propsplace_y1-10);
-    }*/
+                context.strokeText("挂台风!",propsplace_x1-10,propsplace_y1-10);
+            }
+        }
+    }
 
     //篮板碰撞
     /*var distances = function (x,y){
@@ -326,9 +329,6 @@
                 prop_clock();//闹钟道具
                 }
                 t++;//时间增加
-                
-
-
 
                 context.restore();
             }
@@ -337,7 +337,7 @@
         }, 1000 *1/ (60*3));
         
 
-    };
+    }
 
 
 </script>
