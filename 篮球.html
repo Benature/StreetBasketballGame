@@ -288,7 +288,7 @@
             console.log('我撞上板了');
         }
         if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = ture};
-        else if (distance(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = ture};
+        if (distance(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = ture};
 
         if ((connerCollision.c1) || (connerCollision.c2)){
             back = -1.5*back;
