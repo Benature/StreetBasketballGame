@@ -142,13 +142,13 @@
     var shadow = function(){
     //篮球影子
     context.scale(1,0.5);
-            context.fillStyle= 'rgba(0,0,0, 0.6)';
-            context.beginPath();
-            shadow_rate = (ball.y>0)?(0.05*(groundy-ball.y)):(ball.r-5);
-            context.arc(ball.x,2* groundy+2*ball.r,(ball.r-shadow_rate), 0, 360*Math.PI/180, true);
-            context.closePath();
-            context.fill();
-            context.scale(1,2);
+        context.fillStyle= 'rgba(0,0,0, 0.6)';
+        context.beginPath();
+        shadow_rate = (ball.y>0)?(0.05*(groundy-ball.y)):(ball.r-5);
+        context.arc(ball.x,2* groundy+2*ball.r,(ball.r-shadow_rate), 0, 360*Math.PI/180, true);
+        context.closePath();
+        context.fill();
+        context.scale(1,2);
     }
     //篮球旋转
     var ball_rotate = function(){
@@ -240,8 +240,9 @@
     };
     var prop_wind = function(){
         wind.trigger = Math.ceil(Math.random() * 1000);
-        //wind.trigger = 55;
+        //#wind.trigger = 55;
         if((wind.trigger === t_i ||backdoor.wind) && !wind.on){
+            //TODO: 随机速度大小与方向
             wind.blow = true;
             wind.on = true;
             backdoor.wind = false
