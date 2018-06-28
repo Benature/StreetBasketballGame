@@ -245,17 +245,14 @@
         wind.trigger = Math.ceil(Math.random() * 1000);
         //#wind.trigger = 55;
         if((wind.trigger === t_i ||backdoor.wind) && !wind.on){
-            
+            wind_v = Math.floor(Math.random()*10)-5;//台风风速随机
             wind.blow = true;
             wind.on = true;
             backdoor.wind = false
             wind.t = t_i  ;
         }
-        //出现台风
+        //出现台风并持续
         else if((t_i >= wind.t - wind.keep) && wind.blow ){
-            //TODO: 随机速度大小与方向
-            
-            wind_v = Math.floor(Math.random()*10)-5;//台风风速
             context.fillStyle ="purple";
             context.font = "15px Arial";
             context.fillText("挂台风辣!",200,150);
