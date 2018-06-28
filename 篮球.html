@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>接头篮球</title>
+    <title>街头篮球</title>
     <meta charset="utf-8">
 </head>
 <body>
@@ -12,8 +12,9 @@
 <script type="text/javascript">
     var canvas = document.getElementById("myCanvas1");
     var context = canvas.getContext("2d");
-    
-    
+    var canvas_width = document.getElementById("myCanvas1").width
+    var canvas_height = document.getElementById("myCanvas1").height
+    console.log(canvas_width);
     
     var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
     //var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
@@ -54,11 +55,16 @@
     document.addEventListener("keydown", function (e) {
         //console.log("keydown");
         console.log(e.keyCode);
-        if (e.keyCode=="67"){
-            //prop_clock();
-            backdoor.clock = true;
+        if (e.keyCode==67){backdoor.clock = true;
             console.log("backdoor: clock")
         }
+        else if (e.keyCode==69){gameover = true;
+            console.log("backdoor: gameover")
+        }
+        else if (e.keyCode==87){backdoor.wind = true;
+            console.log("backdoor: wind")
+        }
+        
     }, false);
 
     //点击鼠标触发弹起
@@ -72,7 +78,7 @@
         LevelMove = true;
         back = 1
         lor = (mouseX >= ball.x)?(1):(-1);
-        
+        //console.log("lor"+lor);
         v_x = 10;
         //console.log(" now should LEVEL MOVE")
         gamebegin = true;
@@ -82,13 +88,17 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre*0.1 + wind_v*fre;
+            ball.x += lor * v_x *fre*1 + wind_v*fre;
             v_x -= airf;
             if (v_x <= 0) {LevelMove = false}
         }
+        else{
+            ball.x += wind_v*0.1
+        };
+        if (ball.x<-ball.r){ball.x=canvas_width+ball.r-10}
+        else if (ball.x>canvas_width+ball.r){ball.x=-ball.r+10}
 
     };
-
     //篮球弹跳
     var BBU = function(){
         //Ball Bounce Up
@@ -101,7 +111,6 @@
             v_y = 25;
         }
     }
-
     //篮球残影
     var ghost = function(){
         context.fillStyle = 'rgba(239, 129, 32, 0.1)';
@@ -129,22 +138,18 @@
                 context.fill();
             }
     }
-    var propsimage = new Image();
-    propsimage.src ="clock.png";
-    
     //篮球影子
     var shadow = function(){
-        //篮球影子
-        context.scale(1,0.5);
-                context.fillStyle= 'rgba(0,0,0, 0.8)';
-                context.beginPath();
-                shadow_rate = (ball.y>0)?(0.05*(groundy-ball.y)):(ball.r-5);
-                context.arc(ball.x,2* groundy+2*ball.r,(ball.r-shadow_rate), 0, 360*Math.PI/180, true);
-                context.closePath();
-                context.fill();
-                context.scale(1,2);
+    //篮球影子
+    context.scale(1,0.5);
+            context.fillStyle= 'rgba(0,0,0, 0.6)';
+            context.beginPath();
+            shadow_rate = (ball.y>0)?(0.05*(groundy-ball.y)):(ball.r-5);
+            context.arc(ball.x,2* groundy+2*ball.r,(ball.r-shadow_rate), 0, 360*Math.PI/180, true);
+            context.closePath();
+            context.fill();
+            context.scale(1,2);
     }
-
     //篮球旋转
     var ball_rotate = function(){
         //篮球旋转
@@ -165,23 +170,28 @@
         context.fillStyle ="purple";
         context.fillText("点击鼠标以开始",200,500);
     }
-
     //游戏结束界面
     var end_interface = function(){
         context.font = "50px Arial";
         context.fillStyle ="red";
         context.fillText("GAME OVER",100,100);
     }
+    
     //时钟道具特效
+    var propsimage = new Image();
+    var clock_on = false;
+    propsimage.src ="clock.png";
     var prop_clock = function(){
-        //propstrigger = Math.ceil(Math.random() * 1000);
+        propstrigger = Math.ceil(Math.random() * 1000);
         //console.log(propstrigger);
         //随机开始道具
-        if(propstrigger === t_i || backdoor.clock){
+        if((propstrigger === t_i || backdoor.clock)&& !clock_on){
             p_exist = true;
             p_word = false;
+            backdoor.clock = false;
+            clock_on=true;
             t_i0 = t_i  ;
-            console.log("prop is exist") ;   
+            //console.log("prop is exist & t_i0="+t_i0) ;   
         }
         //道具出现乱晃
         else if(t_i >= t_i0 - 0.5 && p_exist){
@@ -207,15 +217,17 @@
             p_draw = true;
             //console.log("add time")  
             }
-            //文字效果
-            if (t_i >= t_i1 - 5 && p_word){
-                context.strokeStyle ="orange";
-                context.font = "30px Arial";
-                context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
-                console.log("print the clock")
-            }
-            else{p_word = false;backdoor.clock=false;}
         }
+        else if(t_i <= t_i0-propstime-5){clock_on=false;};//道具冷却
+
+        //文字效果
+        if (t_i >= t_i1 - 5 && p_word){
+            context.strokeStyle ="orange";
+            context.font = "30px Arial";
+            context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
+            //console.log("print the clock")
+        }
+        
     }
 
     //台风效果
@@ -223,24 +235,28 @@
         trigger:0,
         blow:false,
         t:0,//台风触发时间记录
-        keep:10
+        keep:10,
+        on:false
     };
     var prop_wind = function(){
         wind.trigger = Math.ceil(Math.random() * 1000);
         //wind.trigger = 55;
-        if(wind.trigger === t_i ){
+        if((wind.trigger === t_i ||backdoor.wind) && !wind.on){
             wind.blow = true;
+            wind.on = true;
+            backdoor.wind = false
             wind.t = t_i  ;
         }
         //出现台风
         else if((t_i >= wind.t - wind.keep) && wind.blow ){
-            wind_v = 3;
+            wind_v = 3;//台风风速
             context.fillStyle ="purple";
             context.font = "15px Arial";
             context.fillText("挂台风辣!",200,150);
         }
         else{
             wind.blow = false;
+            wind.on = false;
             wind_v = 0;
             console.log("stop wind")
         }
@@ -292,8 +308,8 @@
                 context.fillText("ball.y: "+ball.y,20,20);
                 context.fillText("v_y: "+v_y,20,120);
                 context.fillText("台风风向→: "+wind_v,120,120);
-                context.fillText("backdoor.clock: "+backdoor.clock+
-                "\t p_exist:"+p_exist,220,20);
+                //context.fillText("p_word: "+p_word+
+                //"\t p_exist:"+p_exist,220,20);
                 t_i = 60-Math.ceil(t/180 );
             
                 {//给界面加一个整数计时器。
@@ -316,12 +332,17 @@
                 context.stroke();          
                 }
                 {//打包代码运行处
+
+                //篮球特效
                 ghost();//篮球残影
                 shadow();//篮球影子
                 ball_rotate();//篮球旋转
+                //篮球运动
                 BBU();//篮球弹跳
-                collision();//碰撞
                 level_move();//篮球水平移动
+
+                collision();//碰撞
+                //道具
                 prop_clock();//闹钟道具
                 prop_wind();//台风
                 }
