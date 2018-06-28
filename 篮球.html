@@ -15,7 +15,7 @@
     var canvas_width = document.getElementById("myCanvas1").width
     var canvas_height = document.getElementById("myCanvas1").height
     
-    var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
+    var ball={x:100,y:250,r:30};//篮球ball圆心坐标,半径
     //var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
     var v_x = 0,
         v_y = 1;//球分解速度
@@ -74,7 +74,7 @@
             p_exist = false;
             t_iplus = 0;
             wind.blow = false;
-            console.log("backdoor: re game");
+            console.log("backdoor: play again");
         }
         else if (e.keyCode == 37){
             v_y = 15;
@@ -194,11 +194,11 @@
         context.font = "100px Arial";
         context.strokeStyle ="pink";
         context.fillStyle ="orange  ";
-        context.fillText("中珠街头土味篮球",400,400);
-        context.strokeText("中珠街头土味篮球",400,400);
+        context.fillText("中珠街头土味篮球",400,300);
+        context.strokeText("中珠街头土味篮球",400,300);
         context.font = "50px Arial";
         context.fillStyle ="purple";
-        context.fillText("点击鼠标以开始",500,500);
+        context.fillText("点击鼠标以开始",550,500);
     }
     //游戏结束界面
     var end_interface = function(){
@@ -206,11 +206,11 @@
         context.font = "100px Arial";
         context.strokeStyle ="white";
         context.fillStyle ="red";
-        context.fillText("GAME OVER",480,400);
-        context.strokeText("GAME OVER",480,400);
+        context.fillText("GAME OVER",480,300);
+        context.strokeText("GAME OVER",480,300);
         context.font = "30px Arial";
         context.fillStyle ="pink";
-        context.fillText("点击R重新开始游戏",600,500);
+        context.fillText("点击R重新开始游戏",650,500);
     }
     
     //时钟道具特效
@@ -313,7 +313,7 @@
     var distances = function (x,y){return ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));}
     
     var board_img = new Image();
-    board_img.src = "img/board.png";
+    board_img.src = "img/board2.png";
     var boardbasic = {x:100, y:100};
     var board = {x:boardbasic.x + 173,y:boardbasic.y,w:40,h:400};
     var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y-393}
@@ -321,7 +321,7 @@
     var connerCollision = {c1:false , c2:false}
 
     var collision = function (){
-        context.drawImage(board_img, 0, 0, 600,600,board.x,board.y,300,300);
+        context.drawImage(board_img, 0, 0, 600,600,board.x,board.y,400,400);
         //单纯粗糙的碰板
         var between_x=(ball.x + ball.r > board.x) && (ball.x - ball.r < board.x + board.w);
         var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
