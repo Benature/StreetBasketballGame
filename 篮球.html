@@ -27,6 +27,7 @@
 
     var LevelMove;//水平移动真假判断
     var lor;//判断水平移动左右
+    var back;//碰撞反向
     var propsplace = {
         x1:0,y1:0,//小道具的随机xy坐标
         x2:0,y2:0,//保存小道具坐标的变量；
@@ -47,6 +48,7 @@
         mouseY = e.pageY - canvas.clientTop;
         //console.log(mouseX + "," + mouseY);
         LevelMove = true;
+        back = 1
         lor = (mouseX > ball.x-ball.r)?(1):(-1);
         v_x = 10;
         //console.log(" now should LEVEL MOVE")
@@ -57,7 +59,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre;
+            ball.x += lor * v_x *fre*back;
             v_x -= wind;
             if (v_x <= 0) {LevelMove = false}
         }
@@ -132,11 +134,11 @@
     var collision = function (){
         //单纯粗糙的碰板
         var board = {x:500,y:200,w:25,h:200};
-        var between_x=(ball.x + 2*ball.r > board.x) && (ball.x < board.x + board.w);
-        var between_y=(ball.y + 2 * ball.r > board.y) && (ball.y < board.y + board.h);
+        var between_x=(ball.x + ball.r > board.x) && (ball.x - ball.r < board.x + board.w);
+        var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
         if (between_x && between_y){
-            lor = -2;
-            v_y = -0.8  *v_y
+            back = -1.5*back;
+            v_y = -1*v_y
             console.log('我TM撞上板了');
         }
         
