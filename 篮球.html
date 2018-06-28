@@ -16,6 +16,7 @@
     
     
     var ball={x:100,y:250,r:40};//篮球ball圆心坐标,半径
+    var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
     var v_x = 0,
         v_y = 1;//球分解速度
     var fre=0.5;//帧率
@@ -40,10 +41,10 @@
     var p_exist = false;
     var propstrigger;
     var t_iplus = 0;//道具加时。
-    var t_i0 ,t_i1;
+    var t_i,t_itotal,t_i0 ,t_i1;
     var ghost_x = new Array();
     var ghost_y = new Array();
-
+    var shadow_rate = 0;//影子缩放比例
     //点击鼠标触发弹起
     canvas.addEventListener("mousedown", function (e) {
         //console.log("mousedown");
@@ -84,6 +85,7 @@
 
     //篮球残影
     var ghost = function(){
+        context.fillStyle = 'rgba(239, 129, 32, 0.1)';
         //记录坐标集合 
         if (t<=1*ball.r){
                 ghost_x[t]=ball.x;
@@ -105,24 +107,53 @@
                 for (var n = 0; n < 1; n++){
                 context.arc(ghost_x[1*i+n],ghost_y[1*i+n],i+1/1*n, 0, 360 * Math.PI / 180, true);
                 }
-                context.fillStyle = 'rgba(239, 129, 32, 0.1)';
                 context.fill();
             }
     }
     var propsimage = new Image();
     propsimage.src ="clock.png";
     
+    //时钟道具特效
+    var prop_clock = function(){
+        propstrigger = Math.ceil(Math.random() * 1000);
+        //console.log(propstrigger);
+            if(propstrigger === t_i ){
+                p_exist = true;
+                p_word = false;
+                t_i0 = t_i  ;
+                //console.log("prop is exist") ;   
+            }
+            else if(t_i >= t_i0 - 0.5 && p_exist){
+                propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
+                propsplace_y1 = Math.random() * 200 + 100;
+                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
+                //console.log("randoming");
+            }
+            else if((t_i <= t_i0 -0.5) && (t_i >= t_i0 - propstime) && p_exist ){
+                p_distance  =  Math.sqrt(Math.pow( ball.x - propsplace_x1,2) + Math.pow(ball.y - propsplace_y1,2) ); 
+                if (p_distance >= 100 && p_draw){
+                    context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
+                }
+                else if (p_distance < 100){p_draw = false}
 
-    var ball_img = new Image();
-    ball_img.src = "ball.png";
-    ball_img.onload = function () {
-        width = ball_img.width;
-        height = ball_img.height;
-        
+                if (p_draw === false){
+                t_iplus += 3;
+                t_i1 = t_i;  
+                p_word = true;
+                p_exist = false;
+                p_draw = true;
+                //console.log("add time")  
+                }
+            }
+            if (t_i >= t_i1 - 1 && p_word){
+                context.strokeStyle ="orange";
+                context.font = "30px Arial";
+                context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
+            }
+    }
+
+
     //篮板碰撞
-
-    
-
     /*var distances = function (x,y){
         distances = ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));
         
@@ -145,8 +176,12 @@
     }
     
     
-    
-    //请开始我们的表演
+
+    var ball_img = new Image();
+    ball_img.src = "ball.png";
+    ball_img.onload = function () {
+        //width = ball_img.width;
+        //height = ball_img.height;
         setInterval(function () {
             context.clearRect(0, 0, 1500, 700);
             //数据显示
@@ -154,14 +189,14 @@
             context.fillStyle ="black";
             context.fillText("ball.y: "+ball.y,20,20);
             context.fillText("v_y: "+v_y,20,120);
-            var t_i = 60-Math.ceil(t/180 );
+            t_i = 60-Math.ceil(t/180 );
            
-            //给界面加一个整数计时器。
-            var t_itotal = t_i + t_iplus;
+            {//给界面加一个整数计时器。
+            t_itotal = t_i + t_iplus;
             context.fillText("时间:" + t_itotal,20,200) ;
             context.fillText("距离" + p_distance ,100,200) ;
-            
-            //篮球架
+            }
+            {//篮球架
             context.beginPath();
             context.moveTo(500,200);
             context.lineTo(500,400);
@@ -169,64 +204,41 @@
             context.lineTo(525,200);
             context.closePath();
             context.stroke();          
-
+            }
             //console.log("v_y: "+v_y);
         
             context.save();
-            ghost();
-            //篮球旋转
+
+            ghost();//篮球残影
+
+            
+            context.scale(1,0.5);
+            context.fillStyle= 'rgba(0,0,0, 0.8)';
+            context.beginPath();
+            shadow_rate = (ball.y>0)?(0.05*(groundy-ball.y)):(ball.r-5);
+            context.arc(ball.x,2* groundy+2*ball.r,(ball.r-shadow_rate), 0, 360*Math.PI/180, true);
+            context.closePath();
+            context.fill();
+            context.scale(1,2)
+
+            
+            {//篮球旋转
             context.translate(ball.x, ball.y);
             context.rotate((Math.PI/180)*t*1)
             context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,80,80);
             /*context.beginPath();context.arc(0, 0, 50, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, 50);context.stroke();*/
             context.rotate(-(Math.PI/180)*t*1)
             context.translate(-ball.x,-ball.y);
-
+            }
+            
+            {//打包代码运行处
             BBU();
             collision();
             level_move();
-            
-           propstrigger = Math.ceil(Math.random() * 1000);
-           //console.log(propstrigger);
-            
-            if(propstrigger === t_i ){
-                p_exist = true;
-                p_word = false;
-                t_i0 = t_i  ;
-                //console.log("prop is exist") ;   
-            }
-            else if(t_i >= t_i0 - 0.5 && p_exist){
-                propsplace_x1 = Math.random() * 200 + 100;//小道具的随机xy坐标
-                propsplace_y1 = Math.random() * 200 + 100;
-                context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
-                //console.log("randoming");
-            }
-            else if((t_i <= t_i0 -0.5) && (t_i >= t_i0 - propstime) && p_exist ){
-                p_distance  =  Math.sqrt(Math.pow( ball.x - propsplace_x1,2) + Math.pow(ball.y - propsplace_y1,2) ); 
-                if (p_distance >= 100 && p_draw){
-                    context.drawImage(propsimage,0,0,300,300,propsplace_x1,propsplace_y1,100,100);
-                }
-                else if (p_distance < 100){p_draw = false}
-
-                if (p_draw === false){
-                t_iplus += 3;
-                t_i1 = t_i;
-                
-                p_word = true;
-                p_exist = false;
-                p_draw = true;
-                //console.log("add time")  
-                }
-            }
-            if (t_i >= t_i1 - 1 && p_word){
-                context.strokeStyle ="orange";
-                context.font = "40px Arial";
-                context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-60);
+            prop_clock();
             }
             
-            t++;
-            
-           
+            t++;//时间增加
             
 
             //context.drawImage(ball, 0, 0, 290,285,ball.x,ball.y,100,98);
