@@ -15,6 +15,8 @@
     var canvas_width = document.getElementById("myCanvas1").width
     var canvas_height = document.getElementById("myCanvas1").height
     
+    //变量声明一堆
+    {
     var ball={x:100,y:250,r:30};//篮球ball圆心坐标,半径
     //var ballc = {x:ball.x-ball.r,y:ball.y-ball.r};//篮球ball的圆心c坐标
     var v_x = 0,
@@ -29,7 +31,7 @@
 
     var LevelMove;//水平移动真假判断
     var lor;
-    var back;
+    var v_back;
     var propsplace_x1;//小道具的随机xy坐标
     var propsplace_y1 ;
     var propstime = 5;//小道具停留时间；
@@ -49,7 +51,7 @@
     var gameover = false;//游戏是否结束
     var gamebegin = false;//游戏是否开始
     var backdoor = {clock:false,wind:false,count:0}//后门
-    
+    }
 
     //键盘后门
     document.addEventListener("keydown", function (e) {
@@ -83,7 +85,7 @@
                 //向左点击效果
                 v_y = 15;
                 LevelMove = true;
-                back = 1;
+                v_back = 1;
                 lor = -1;
                 v_x = 5;
                 gamebegin = true;
@@ -92,7 +94,7 @@
                 //向右点击效果
                 v_y = 15;
                 LevelMove = true;
-                back = 1;
+                v_back = 1;
                 lor = 1;
                 v_x = 5;
                 gamebegin = true;
@@ -108,7 +110,7 @@
         mouseY = e.pageY - canvas.clientTop;
         //console.log(mouseX + "," + mouseY);
         LevelMove = true;
-        back = 1;
+        v_back = 1;
         lor = (mouseX >= ball.x)?(1):(-1);
         //console.log("lor"+lor);
         v_x = 5;
@@ -120,7 +122,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre*back + wind_v*fre*0.1;
+            ball.x += lor * v_x *fre*v_back + wind_v*fre*0.1;
             v_x -= airf;
             if (v_x <= 0) {LevelMove = false}
         }
@@ -189,7 +191,9 @@
         context.translate(ball.x, ball.y);
         context.rotate((Math.PI/180)*t*1)
         context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
-        /*context.beginPath();context.arc(0, 0, 50, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, 50);context.stroke();*/
+        //测试画图
+        context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
+        
         context.rotate(-(Math.PI/180)*t*1)
         context.translate(-ball.x,-ball.y);
     }
@@ -319,42 +323,78 @@
     var distances = function (x,y){return ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));}
     var board_img = new Image();
     board_img.src = "img/board2.png";
-    var boardbasic = {x:100, y:100};
-    var board = {x:boardbasic.x + 184,y:boardbasic.y + 1,w:27,h:269};
-    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y + 240}
-    var boardket = {x1:boardbasic.x + 10.5,y1:boardbasic.y + 393,x2:boardbasic.x + 160.5,y2:boardbasic.y + 393}
-    var connerCollision = {c1:false , c2:false}
+    
+    var boardbasic = {x:100, y:100, k:2/3};//篮板基点坐标及缩放系数k
+    //篮板
+    var board = {x:(boardbasic.x + 184*boardbasic.k),y:(boardbasic.y + 1*boardbasic.k),//左上角
+        w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
+        left:false,right:false,up:false,down:false,
+        left0:false,right0:false,up0:false,down0:false};//碰撞检测
+    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y + 240};//FIXME:这个不知道是啥?
+    var basketry = {x1:boardbasic.x + 10.5*boardbasic.k,y1:boardbasic.y + 240*boardbasic.k,//篮筐左端(近似为圆)圆心
+        x2:boardbasic.x + 160.5*boardbasic.k,y2:boardbasic.y + 240*boardbasic.k,//篮筐右端(近似为圆)圆心
+        r:10.5*boardbasic.k};//近似圆的半径
+    var connerCollision = {c1:false , c2:false};
+    var phi;//非对心碰撞角度(篮筐碰撞)
+    
+    //分号啊伟德
 
-    var collision = function (){
-        context.drawImage(board_img, 0, 0, 600,600,board.x,board.y,400,400);
+    var collision = function(){
+        context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
         //单纯粗糙的碰板
-        var between_x=(ball.x + ball.r > board.x) && (ball.x - ball.r < board.x + board.w);
-        var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
+        board.left=(ball.x + ball.r >= board.x);//左板之右
+        board.right=(ball.x - ball.r <= board.x + board.w);//右板之左
+        board.up=(ball.y + ball.r >= board.y);//低于上端
+        board.down=(ball.y - ball.r <= board.y + board.h);//高于上端
+        //时间反演判断
+        board.left0=(ghost_x[ghost_x.length-2] + ball.r >= board.x);//左板之右
+        board.right0=(ghost_x[ghost_x.length-2] - ball.r <= board.x + board.w);//右板之左
+        board.up0=(ghost_y[ghost_y.length-2] + ball.r >= board.y);//低于上端
+        board.down0=(ghost_y[ghost_y.length-2] - ball.r <= board.y + board.h);//高于上端
+        //console.log(ghost_y[ghost_x.length-2]);
         
-        if (between_x && between_y){
-            back = -0.8*back;
-            if (!((ball.y > board.y) && (ball.y < board.y + board.h))){
-                v_y = -0.8 * v_y;
+        if ( (board.left && board.right) && (board.up && board.down) ){
+            if (!(board.left0 && board.right0)){
+                v_back = -1*v_back;
+                console.log("board of l&r");
             }
-
-            console.log('我撞上板了');
+            if (!(board.up0 && board.down0)){
+                v_y = -0.8 * v_y;
+                console.log('我撞板了up or down');
+            }
         }
+            
         //碰篮框
-        if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = true};
-        if (distances(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = true};
+        /*
+        if (distances(basketry.x1,basketry.y1) < ball.r*ball.r){connerCollision.c1 = true};
+        if (distances(basketry.x2,basketry.y2) < ball.r*ball.r){connerCollision.c2 = true};
 
         if ((connerCollision.c1)||(connerCollision.c2)){
-            
-            v_x = -1*(Math.cos(2*fin)*v_x + Math.sin(2*fin)*v_y) + wind_v*fre*0.1;
-            v_y = Math.sin(2*fin)*v_y + Math.cos(2*fin)*v_y;
-            
-        
+            phi = Math.atan((boardbasic.y-ball.y)/(boardbasic.x-ball.x));//这个值你到时改成正确吧我先随便弄的
+            v_x = -1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y) + wind_v*fre*0.1;
+            v_y = Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y;
+            //角度改成phi了伟德
         }
+        */ 
 
-        
-        
+        //测试用函数
+        fake_board();
     }
 
+    //画一个假篮板
+    var fake_board = function(){
+        //篮板
+        //console.log(board.x)
+        context.fillStyle = 'rgba(129, 239, 32, 0.6)';
+        context.beginPath();
+        context.moveTo(board.x,board.y);
+        context.lineTo(board.x+board.w,board.y);
+        context.lineTo(board.x+board.w,board.y+board.h);
+        context.lineTo(board.x,board.y+board.h);
+        context.closePath();
+        context.fill();          
+        
+    }
 
 
     //----------------------------------------//
@@ -376,7 +416,6 @@
         setInterval(function () {
             context.clearRect(0, 0, 1500, 700);
             context.save();
-            
             //游戏开始界面
             if (!gamebegin){begin_interface();t=0}
             else if (gamebegin && !gameover){
@@ -385,8 +424,11 @@
                 //数据显示
                 context.font = "20px Arial";
                 context.fillStyle ="black";
-                //context.fillText("ball.y: "+ball.y,20,20);
-                //context.fillText("v_y: "+v_y,20,120);
+                context.fillText("ball.x: "+ball.x,120,20);
+                context.fillText("ball.y: "+ball.y,120,60);
+                context.fillText("v_y: "+v_y,20,120);
+                context.fillText("v_x: "+v_x,20,80);
+                context.fillText("v_back: "+v_x,220,180);
                 //context.fillText("台风风向→: "+wind_v,20,30);
                 
                 t_i = 60-Math.ceil(t/180 );
@@ -401,15 +443,7 @@
                     gameover=true;
                     //console.log("game over");
                 }
-                {//篮球架
-                context.beginPath();
-                context.moveTo(500,200);
-                context.lineTo(500,400);
-                context.lineTo(525,400);
-                context.lineTo(525,200);
-                context.closePath();
-                context.stroke();          
-                }
+                
                 {//打包代码运行处
 
                 //篮球特效
@@ -421,12 +455,14 @@
                 level_move();//篮球水平移动
 
                 collision();//碰撞
+                
                 //道具
                 prop_clock();//闹钟道具
-                prop_wind();//台风
+                //prop_wind();//台风
                 }
                 t++;//时间增加
 
+                
                 
             }
             else {end_interface();}//游戏结束界面
