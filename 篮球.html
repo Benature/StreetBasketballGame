@@ -48,51 +48,56 @@
     var shadow_rate = 0;//影子缩放比例
     var gameover = false;//游戏是否结束
     var gamebegin = false;//游戏是否开始
-    var backdoor = {clock:false,wind:false}//后门
+    var backdoor = {clock:false,wind:false,count:0}//后门
     
 
     //键盘后门
     document.addEventListener("keydown", function (e) {
         //console.log("keydown");
         console.log(e.keyCode);
-        if (e.keyCode==67){backdoor.clock = true;
-            console.log("backdoor: clock");
-        }
+        if (e.keyCode==17){backdoor.count+=1}
+        else if (e.keyCode==82){//重置布尔值
+                gamebegin = false;
+                gameover = false;
+                clock_on = false;
+                wind.on = false;
+                p_draw = true;
+                p_word = false;
+                p_exist = false;
+                t_iplus = 0;
+                wind.blow = false;
+                backdoor.count = 0;
+                console.log("backdoor: play again");
+            }
         else if (e.keyCode==69){gameover = true;
             console.log("backdoor: gameover");
         }
-        else if (e.keyCode==87){backdoor.wind = true;
-            console.log("backdoor: wind");
+        if (backdoor.count == 5){
+            if (e.keyCode==67){backdoor.clock = true;
+                console.log("backdoor: clock");
+            }
+            else if (e.keyCode==87){backdoor.wind = true;
+                console.log("backdoor: wind");
+            }
+            else if (e.keyCode == 37){
+                //向左点击效果
+                v_y = 15;
+                LevelMove = true;
+                back = 1;
+                lor = -1;
+                v_x = 5;
+                gamebegin = true;
+            }
+            else if (e.keyCode == 39){
+                //向右点击效果
+                v_y = 15;
+                LevelMove = true;
+                back = 1;
+                lor = 1;
+                v_x = 5;
+                gamebegin = true;
+            }
         }
-        else if (e.keyCode==82){//重置布尔值
-            gamebegin = false;
-            gameover = false;
-            clock_on = false;
-            wind.on = false;
-            p_draw = true;
-            p_word = false;
-            p_exist = false;
-            t_iplus = 0;
-            wind.blow = false;
-            console.log("backdoor: play again");
-        }
-        else if (e.keyCode == 37){
-            v_y = 15;
-            LevelMove = true;
-            back = 1;
-            lor = -1;
-            v_x = 5;
-            gamebegin = true;
-        }
-        else if (e.keyCode == 39){
-            v_y = 15;
-            LevelMove = true;
-            back = 1;
-            lor = 1;
-            v_x = 5;
-            gamebegin = true;
-        }
-        
     }, false);
 
     //点击鼠标触发弹起
@@ -365,6 +370,7 @@
         setInterval(function () {
             context.clearRect(0, 0, 1500, 700);
             context.save();
+            
             //游戏开始界面
             if (!gamebegin){begin_interface();t=0}
             else if (gamebegin && !gameover){
@@ -415,10 +421,16 @@
                 }
                 t++;//时间增加
 
-                context.restore();
+                
             }
             else {end_interface();}//游戏结束界面
-        
+            //后门
+            if (backdoor.count == 5){
+                context.font = "20px Arial";
+                context.fillStyle ="black";
+                context.fillText("嘎吱~你打开了一扇后门!",1250,20);
+            }
+            context.restore();
         }, 1000 *1/ (60*3));
         
 
