@@ -317,13 +317,12 @@
 
     //篮板碰撞
     var distances = function (x,y){return ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));}
-    
     var board_img = new Image();
     board_img.src = "img/board2.png";
     var boardbasic = {x:100, y:100};
-    var board = {x:boardbasic.x + 173,y:boardbasic.y,w:40,h:400};
-    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y-393}
-    var boardket = {x1:boardbasic.x + 21,y1:boardbasic.y-393,x2:boardbasic.x + 150,y2:boardbasic.y-393}
+    var board = {x:boardbasic.x + 184,y:boardbasic.y + 1,w:27,h:269};
+    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y + 240}
+    var boardket = {x1:boardbasic.x + 10.5,y1:boardbasic.y + 393,x2:boardbasic.x + 160.5,y2:boardbasic.y + 393}
     var connerCollision = {c1:false , c2:false}
 
     var collision = function (){
@@ -333,16 +332,23 @@
         var between_y=(ball.y + ball.r > board.y) && (ball.y - ball.r < board.y + board.h);
         
         if (between_x && between_y){
-            back = -1.5*back;
-            v_y = -1*v_y;
+            back = -0.8*back;
+            if (!((ball.y > board.y) && (ball.y < board.y + board.h))){
+                v_y = -0.8 * v_y;
+            }
+
             console.log('我撞上板了');
         }
+        //碰篮框
         if (distances(boardket.x1,boardket.y1) < ball.r*ball.r){connerCollision.c1 = true};
         if (distances(boardket.x2,boardket.y2) < ball.r*ball.r){connerCollision.c2 = true};
 
-        if ((connerCollision.c1) || (connerCollision.c2)){
-            back = -1.5*back;
-            v_y = -1*v_y
+        if ((connerCollision.c1)||(connerCollision.c2)){
+            
+            v_x = -1*(Math.cos(2*fin)*v_x + Math.sin(2*fin)*v_y) + wind_v*fre*0.1;
+            v_y = Math.sin(2*fin)*v_y + Math.cos(2*fin)*v_y;
+            
+        
         }
 
         
