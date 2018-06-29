@@ -120,11 +120,13 @@
 
     //水平移动
     var level_move = function(){
-        if (LevelMove) {
+        if (true) {
+            //TODO:删去LevelMove
             //console.log("LEVEL MOVE!!!")
             ball.x += lor * v_x *fre*v_back + wind_v*fre*0.1;
             v_x -= airf;
-            if (v_x <= 0) {LevelMove = false}
+            if (v_x <= 0) {LevelMove = false};
+            if (v_x <= 0) {v_x=0};
         }
         else{
             ball.x += wind_v*0.1
@@ -192,7 +194,7 @@
         context.rotate((Math.PI/180)*t*1)
         context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
         //测试画图
-        context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
+        //context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
         
         context.rotate(-(Math.PI/180)*t*1)
         context.translate(-ball.x,-ball.y);
@@ -319,12 +321,20 @@
         }
     }
 
+    //距离函数
+    var distances = function (x1,y1,x2,y2){
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+        return (Math.sqrt( Math.pow(this.x1-this.x2,2)+Math.pow(this.y1-this.y2,2)));
+    }
+
     //篮板碰撞
-    var distances = function (x,y){return ((ball.x+ball.r-x)*(ball.x+ball.r-x))+((ball.y-ball.r-y)*(ball.y-ball.r-y));}
     var board_img = new Image();
     board_img.src = "img/board2.png";
     
-    var boardbasic = {x:100, y:100, k:2/3};//篮板基点坐标及缩放系数k
+    var boardbasic = {x:300, y:100, k:2/3};//篮板基点坐标及缩放系数k
     //篮板
     var board = {x:(boardbasic.x + 184*boardbasic.k),y:(boardbasic.y + 1*boardbasic.k),//左上角
         w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
@@ -341,6 +351,11 @@
 
     var collision = function(){
         context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
+        board_collision();//篮板碰撞
+        basketry_collision();//篮筐碰撞
+    }
+
+    var board_collision = function(){
         //单纯粗糙的碰板
         board.left=(ball.x + ball.r >= board.x);//左板之右
         board.right=(ball.x - ball.r <= board.x + board.w);//右板之左
@@ -363,19 +378,24 @@
                 console.log('我撞板了up or down');
             }
         }
-            
+    }
+    var basketry_collision = function(){
         //碰篮框
-        /*
-        if (distances(basketry.x1,basketry.y1) < ball.r*ball.r){connerCollision.c1 = true};
-        if (distances(basketry.x2,basketry.y2) < ball.r*ball.r){connerCollision.c2 = true};
-
-        if ((connerCollision.c1)||(connerCollision.c2)){
-            phi = Math.atan((boardbasic.y-ball.y)/(boardbasic.x-ball.x));//这个值你到时改成正确吧我先随便弄的
-            v_x = -1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y) + wind_v*fre*0.1;
-            v_y = Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y;
-            //角度改成phi了伟德
+        
+        if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
+            phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
+            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
+            console.log("left");
         }
-        */ 
+        else if (distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r){
+            phi = Math.atan((basketry.y2-ball.y)/(basketry.x2-ball.x));
+            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
+            console.log("right");
+        };
+
+        //角度改成phi了伟德
 
         //测试用函数
         fake_board();
@@ -383,9 +403,12 @@
 
     //画一个假篮板
     var fake_board = function(){
+        context.fillStyle = 'rgba(129, 239, 32, 0.6)';
+        //篮筐两端
+        context.beginPath();context.arc(basketry.x1,basketry.y1, basketry.r, 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+        context.beginPath();context.arc(basketry.x2,basketry.y2, basketry.r, 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
         //篮板
         //console.log(board.x)
-        context.fillStyle = 'rgba(129, 239, 32, 0.6)';
         context.beginPath();
         context.moveTo(board.x,board.y);
         context.lineTo(board.x+board.w,board.y);
