@@ -120,7 +120,7 @@
     var level_move = function(){
         if (LevelMove) {
             //console.log("LEVEL MOVE!!!")
-            ball.x += lor * v_x *fre*1 + wind_v*fre*0.1;
+            ball.x += lor * v_x *fre*back + wind_v*fre*0.1;
             v_x -= airf;
             if (v_x <= 0) {LevelMove = false}
         }
