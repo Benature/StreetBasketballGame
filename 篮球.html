@@ -417,9 +417,9 @@
         var VectorR = new Vector(1,1);
         var getV = function (){
             var VectorR_Normalize = VectorR.normalize();
-            var Vector_i = VectorV.dot(VectorR_Normalize.dot(VectorMinus.dot(VectorR_Normalize)));
-            var Vector_j = new VectorV.add(Vector_i);
-            var VectorNewV = new Vector_j.add(Vector_i)
+            var Vector_i = VectorR_Normalize.multiply(-1 * VectorV.dot(VectorR_Normalize));
+            var Vector_j = VectorV.add(Vector_i);
+            var VectorNewV = Vector_j.add(Vector_i)
             v_x = VectorNewV.x + wind_v*fre*0.1;
             v_y = VectorNewV.y
             return v_x,v_y;
