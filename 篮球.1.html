@@ -346,12 +346,18 @@
         this.y2 = y2;
         return (Math.sqrt( Math.pow(this.x1-this.x2,2)+Math.pow(this.y1-this.y2,2)));
     }
+    //对篮板位置的判断
+    var boardplace = function()
+    {
+        if (boardbasic.x <= 400)
+        {boardbasic.lr = 1}
+    };
 
     //篮板碰撞
     var board_img = new Image();
     board_img.src = "img/board2.png";
     
-    var boardbasic = {x:300, y:100, k:2/3};//篮板基点坐标及缩放系数k
+    var boardbasic = {x:-300, y:100, k:2/3,lr:-1};//篮板基点坐标及缩放系数k
     //篮板
     var board = {x:(boardbasic.x + 184*boardbasic.k),y:(boardbasic.y + 1*boardbasic.k),//左上角
         w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
@@ -364,26 +370,37 @@
     var connerCollision = {c1:false , c2:false};
     var phi;//非对心碰撞角度(篮筐碰撞)
 
-
+    var board_column = new Image();
+    board_column.src = "img/board_column.png";
     var drawboard = function(){
-    board.x=(boardbasic.x + 184*boardbasic.k);
+    board.x=(boardbasic.x + 184*boardbasic.k)*boardbasic.lr;
     board.y=(boardbasic.y + 1*boardbasic.k);//左上角
     board.w=(27*boardbasic.k);
     board.h=(269*boardbasic.k);//篮板宽高
     //board.left=false;board.right=false;board.up=false;board.down=false;
     //board.left0=false;board.right0=false;board.up0=false;board.down0=false;//碰撞检测
-    boardheart.x = boardbasic.x + 85.5*boardbasic.k;
+    boardheart.x = (boardbasic.x + 85.5*boardbasic.k)*boardbasic.lr;
     boardheart.y=boardbasic.y + 240*boardbasic.k;//篮框中心 判断得分
-    basketry.x1 = boardbasic.x + 10.5*boardbasic.k;basketry.y1=boardbasic.y + 240*boardbasic.k;//篮筐左端(近似为圆)圆心
-    basketry.x2=boardbasic.x + 160.5*boardbasic.k;basketry.y2=boardbasic.y + 240*boardbasic.k;//篮筐右端(近似为圆)圆心
+    basketry.x1 = (boardbasic.x + 10.5*boardbasic.k)*boardbasic.lr;basketry.y1=boardbasic.y + 240*boardbasic.k;//篮筐左端(近似为圆)圆心
+    basketry.x2=(boardbasic.x + 160.5*boardbasic.k)*boardbasic.lr;basketry.y2=boardbasic.y + 240*boardbasic.k;//篮筐右端(近似为圆)圆心
     basketry.r=10.5*boardbasic.k;//近似圆的半径
+   
     }
      
 
     var collision = function(){
+        context.scale(-1,1);
+        context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
+       //context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
+        context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(800*boardbasic.k));
+        
+        context.scale(-1,1);
+
+        /*
         context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
-        
-        
+        context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
+        context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,800*boardbasic.k);
+        */
         board_collision();//篮板碰撞
         basketry_collision();//篮筐碰撞
 
@@ -399,8 +416,10 @@
         if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
             //TODO:
             
-            boardbasic.x = (Math.random()*600 + 100);
-            boardbasic.y = (Math.random()*200 + 200);
+            boardbasic.x = -(Math.random()*800 + 200);
+            //boardplace();
+            boardbasic.y = (Math.random()*200 + 300);
+
             scoreboard = scoreboard + 3;
             console.log("ok,ball in");
         }
@@ -410,12 +429,12 @@
     var board_collision = function(){
         //单纯粗糙的碰板
         board.left=(ball.x + ball.r >= board.x);//左板之右
-        board.right=(ball.x - ball.r <= board.x + board.w);//右板之左
+        board.right=(ball.x - ball.r <= board.x + board.w*boardbasic.lr);//右板之左
         board.up=(ball.y + ball.r >= board.y);//低于上端
         board.down=(ball.y - ball.r <= board.y + board.h);//高于上端
         //时间反演判断
         board.left0=(ghost_x[ghost_x.length-2] + ball.r >= board.x);//左板之右
-        board.right0=(ghost_x[ghost_x.length-2] - ball.r <= board.x + board.w);//右板之左
+        board.right0=(ghost_x[ghost_x.length-2] - ball.r <= board.x + board.w*boardbasic.lr);//右板之左
         board.up0=(ghost_y[ghost_y.length-2] + ball.r >= board.y);//低于上端
         board.down0=(ghost_y[ghost_y.length-2] - ball.r <= board.y + board.h);//高于上端
         //console.log(ghost_y[ghost_x.length-2]);
@@ -430,6 +449,8 @@
                 console.log('我撞板了up or down');
             }
         }
+        //测试用函数
+        fake_board();
     }
     var basketry_collision = function(){
         //碰篮框
@@ -475,25 +496,25 @@
 
         //角度改成phi了伟德
 
-        //测试用函数
-        fake_board();
+        
     }
 
     //画一个假篮板
     var fake_board = function(){
         context.fillStyle = 'rgba(129, 239, 32, 0.6)';
         //篮筐两端
-        context.beginPath();context.arc(basketry.x1,basketry.y1, basketry.r, 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
-        context.beginPath();context.arc(basketry.x2,basketry.y2, basketry.r, 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+        context.beginPath();context.arc(basketry.x1,basketry.y1, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+        //context.fillStyle ="purple";
+        context.beginPath();context.arc(basketry.x2,basketry.y2, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
         //篮筐中心
-        context.beginPath();context.arc(boardheart.x,boardheart.y, basketry.r, 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+        context.beginPath();context.arc(boardheart.x,boardheart.y, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
 
         //篮板
         //console.log(board.x)
         context.beginPath();
         context.moveTo(board.x,board.y);
-        context.lineTo(board.x+board.w,board.y);
-        context.lineTo(board.x+board.w,board.y+board.h);
+        context.lineTo(board.x+board.w*boardbasic.lr,board.y);
+        context.lineTo(board.x+board.w*boardbasic.lr,board.y+board.h);
         context.lineTo(board.x,board.y+board.h);
         context.closePath();
         context.fill();          
@@ -564,8 +585,9 @@
                 //道具
                 prop_clock();//闹钟道具
                 prop_wind();//台风TODO:台风关了
-
+                
                 scoreyes();//得分
+                
                 }
                 t++;//时间增加
 
