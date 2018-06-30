@@ -413,23 +413,26 @@
             console.log("right");
         };*/
         var VectorV = new Vector(v_x,v_y);
-        var VectorMinus = new Vector (-1,-1);
+        var VectorOrigin = new Vector (ball.x,ball.y);
         var VectorR = new Vector(1,1);
+        var VectorD = new Vector(1,1);
         var getV = function (){
-            var VectorR_Normalize = VectorR.normalize();
-            var Vector_i = VectorR_Normalize.multiply(-1 * VectorV.dot(VectorR_Normalize));
+            var VectorD_Normalize = VectorD.normalize();
+            var Vector_i = VectorD_Normalize.multiply(-1 * VectorV.dot(VectorD_Normalize));
             var Vector_j = VectorV.add(Vector_i);
             var VectorNewV = Vector_j.add(Vector_i)
             v_x = VectorNewV.x + wind_v*fre*0.1;
-            v_y = VectorNewV.y
+            v_y = VectorNewV.y;
             return v_x,v_y;
         }
         if ((distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r)){
             VectorR = new Vector(basketry.x1 , basketry.y1);
+            VectorD = VectorR.subtract(VectorOrigin);
             getV();
         }
         if ((distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r)){
             VectorR = new Vector (basketry.x2 , basketry.y2);
+            VectorD = VectorR.subtract(VectorOrigin);
             getV();
         }
 
