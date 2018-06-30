@@ -56,7 +56,7 @@
         copy: function() { return new Vector(this.x, this.y); },
         length: function() { return Math.sqrt(this.x * this.x + this.y * this.y); },
         sqrLength: function() { return this.x * this.x + this.y * this.y; },
-        normalize: function() { var inv = 1 / Math.sqrt(this.x * this.x + this.y * this.y); return new Vector(this.x * inv, this.y * inv); },
+        normalize: function() { var inv = 1 / this.length(); return new Vector(this.x * inv, this.y * inv); },
         negate: function() { return new Vector(-this.x, -this.y); },
         add: function(v) { return new Vector(this.x + v.x, this.y + v.y); },
         subtract: function(v) { return new Vector(this.x - v.x, this.y - v.y); },
@@ -417,7 +417,7 @@
         var VectorR = new Vector(1,1);
         var getV = function (){
             var VectorR_Normalize = VectorR.normalize();
-            var Vector_i = VectorV.dot(VectorR_Normalize.dot(VectorMinus.dot(Vector_Normalize)));
+            var Vector_i = VectorV.dot(VectorR_Normalize.dot(VectorMinus.dot(VectorR_Normalize)));
             var Vector_j = new VectorV.add(Vector_i);
             var VectorNewV = new Vector_j.add(Vector_i)
             v_x = VectorNewV.x + wind_v*fre*0.1;
