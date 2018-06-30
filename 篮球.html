@@ -459,6 +459,7 @@
             var VectorNewV = Vector_j.add(Vector_i)
             v_x = VectorNewV.x + wind_v*fre*0.1;
             v_y = VectorNewV.y;
+            console.log(v_x);
             return v_x,v_y;
         }
         if ((distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r)){
