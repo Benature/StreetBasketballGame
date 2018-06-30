@@ -370,7 +370,6 @@
     //篮板碰撞
     var board_img = new Image();
     board_img.src = "img/board2.png";
-<<<<<<< HEAD
     
     var boardbasic = {x:300, y:100, k:2/3};//篮板基点坐标及缩放系数k
     //篮板
@@ -385,22 +384,7 @@
     var connerCollision = {c1:false , c2:false};
     var phi;//非对心碰撞角度(篮筐碰撞)
     
-=======
-    
-    var boardbasic = {x:300, y:100, k:2/3};//篮板基点坐标及缩放系数k
-    //篮板
-    var board = {x:(boardbasic.x + 184*boardbasic.k),y:(boardbasic.y + 1*boardbasic.k),//左上角
-        w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
         left:false,right:false,up:false,down:false,
-        left0:false,right0:false,up0:false,down0:false};//碰撞检测
-    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y + 240};//篮框中新 判断得分
-    var basketry = {x1:boardbasic.x + 10.5*boardbasic.k,y1:boardbasic.y + 240*boardbasic.k,//篮筐左端(近似为圆)圆心
-        x2:boardbasic.x + 160.5*boardbasic.k,y2:boardbasic.y + 240*boardbasic.k,//篮筐右端(近似为圆)圆心
-        r:10.5*boardbasic.k};//近似圆的半径
-    var connerCollision = {c1:false , c2:false};
-    var phi;//非对心碰撞角度(篮筐碰撞)
-    
->>>>>>> 2d028078ab2de1d72e85c5c7c2293230887b838a
     //分号啊伟德
 
     var collision = function(){
