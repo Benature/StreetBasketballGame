@@ -403,6 +403,10 @@
         */
         board_collision();//篮板碰撞
         basketry_collision();//篮筐碰撞
+        bug_collision();//avoid bug
+
+
+
 
         drawboard();
         //测试用函数
@@ -493,12 +497,20 @@
             VectorD = VectorR.subtract(VectorOrigin);
             getV();
         }
-
+        
         //角度改成phi了伟德
 
         
     }
+    var bug_collision = function(){
+        //小横板防卡图
+        if (distances(basketry.x2 + 7*boardbasic.k,basketry.y2,ball.x,ball.y) < (basketry.r)){
+            v_y = -30
+            v_x = -20
+            console.log("you were fall in bug!")
+        }
 
+    }
     //画一个假篮板
     var fake_board = function(){
         context.fillStyle = 'rgba(129, 239, 32, 0.6)';
