@@ -88,25 +88,6 @@
         else if (e.keyCode==69){gameover = true;
             console.log("backdoor: gameover");
         }
-        else if (e.keyCode == 37){
-            //向左点击效果
-            v_y = 15;
-            LevelMove = true;
-            v_back = 1;
-            lor = -1;
-            v_x = 5;
-            gamebegin = true;
-        }
-        else if (e.keyCode == 39){
-            //向右点击效果
-            v_y = 15;
-            LevelMove = true;
-            v_back = 1;
-            lor = 1;
-            v_x = 5;
-            gamebegin = true;
-        }
-
         if (backdoor.count == 5){
             if (e.keyCode==67){backdoor.clock = true;
                 console.log("backdoor: clock");
@@ -114,7 +95,24 @@
             else if (e.keyCode==87){backdoor.wind = true;
                 console.log("backdoor: wind");
             }
-            
+            else if (e.keyCode == 37){
+                //向左点击效果
+                v_y = 15;
+                LevelMove = true;
+                v_back = 1;
+                lor = -1;
+                v_x = 5;
+                gamebegin = true;
+            }
+            else if (e.keyCode == 39){
+                //向右点击效果
+                v_y = 15;
+                LevelMove = true;
+                v_back = 1;
+                lor = 1;
+                v_x = 5;
+                gamebegin = true;
+            }
         }
     }, false);
 
@@ -210,7 +208,7 @@
         context.rotate((Math.PI/180)*t*1)
         context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
         //测试画图
-        context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.fill();context.stroke();
+        //context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
         
         context.rotate(-(Math.PI/180)*t*1)
         context.translate(-ball.x,-ball.y);
@@ -221,7 +219,7 @@
         context.drawImage(background_begin, 0, 0, 750,563,0,-200,1500,1126);
         context.font = "100px Arial";
         context.strokeStyle ="pink";
-        context.fillStyle ="orange  ";
+        context.fillStyle ="orange";
         context.fillText("中珠街头土味篮球",400,300);
         context.strokeText("中珠街头土味篮球",400,300);
         context.font = "50px Arial";
@@ -291,8 +289,29 @@
             context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
             //console.log("print the clock")
         }
+        //进篮效果。
+        var boardimage = new Image();
+        boardimage.src = "clock.png";
+        var board_on = true;
+   
+    /*var board_emerge = function(){
+        if(board_on){
+        boardbasic.x1 = Math.random() * 1100 + 200;
+        boardbasic.y1 = Math.random() * 100 + 500;
+         t_i1 = t_i;
+         board_on = false;
+
+        }
+        else if ((t_i <= t_i1 - board.time)&& board.exist)
+        {
+            if(( ball.x - ball.r <= boardheart.x <= ball.x + ball.r)&&)
+            context.drawImage(boardimage,0,0,300,300,boardbasic.x1,boardbasic.y1,300,300);
+        }
         
-    }
+
+   
+    
+    }*/
 
     //台风效果
     var wind = {
@@ -363,6 +382,7 @@
     var connerCollision = {c1:false , c2:false};
     var phi;//非对心碰撞角度(篮筐碰撞)
     
+        left:false,right:false,up:false,down:false,
     //分号啊伟德
 
     var collision = function(){
@@ -400,15 +420,13 @@
         
         /*if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
-            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
-            v_back = -1*v_back;
+            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("left");
         }
         else if (distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y2-ball.y)/(basketry.x2-ball.x));
-            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
-            v_back = -1*v_back;
+            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("right");
         };*/
@@ -519,7 +537,7 @@
                 
                 //道具
                 prop_clock();//闹钟道具
-                //prop_wind();//台风TODO:台风关了
+                //prop_wind();//台风
                 }
                 t++;//时间增加
 
@@ -539,6 +557,7 @@
 
     }
 
+}
 
 </script>
 </body>
