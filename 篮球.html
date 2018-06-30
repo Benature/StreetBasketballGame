@@ -74,6 +74,25 @@
         else if (e.keyCode==69){gameover = true;
             console.log("backdoor: gameover");
         }
+        else if (e.keyCode == 37){
+            //向左点击效果
+            v_y = 15;
+            LevelMove = true;
+            v_back = 1;
+            lor = -1;
+            v_x = 5;
+            gamebegin = true;
+        }
+        else if (e.keyCode == 39){
+            //向右点击效果
+            v_y = 15;
+            LevelMove = true;
+            v_back = 1;
+            lor = 1;
+            v_x = 5;
+            gamebegin = true;
+        }
+
         if (backdoor.count == 5){
             if (e.keyCode==67){backdoor.clock = true;
                 console.log("backdoor: clock");
@@ -81,24 +100,7 @@
             else if (e.keyCode==87){backdoor.wind = true;
                 console.log("backdoor: wind");
             }
-            else if (e.keyCode == 37){
-                //向左点击效果
-                v_y = 15;
-                LevelMove = true;
-                v_back = 1;
-                lor = -1;
-                v_x = 5;
-                gamebegin = true;
-            }
-            else if (e.keyCode == 39){
-                //向右点击效果
-                v_y = 15;
-                LevelMove = true;
-                v_back = 1;
-                lor = 1;
-                v_x = 5;
-                gamebegin = true;
-            }
+            
         }
     }, false);
 
@@ -194,7 +196,7 @@
         context.rotate((Math.PI/180)*t*1)
         context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
         //测试画图
-        //context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
+        context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.fill();context.stroke();
         
         context.rotate(-(Math.PI/180)*t*1)
         context.translate(-ball.x,-ball.y);
@@ -384,13 +386,15 @@
         
         if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
-            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
+            v_back = -1*v_back;
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("left");
         }
         else if (distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y2-ball.y)/(basketry.x2-ball.x));
-            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
+            v_back = -1*v_back;
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("right");
         };
@@ -481,7 +485,7 @@
                 
                 //道具
                 prop_clock();//闹钟道具
-                //prop_wind();//台风
+                //prop_wind();//台风TODO:台风关了
                 }
                 t++;//时间增加
 
