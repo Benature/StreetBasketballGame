@@ -412,7 +412,7 @@ var scoreyes = function(){
     if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
         boardbasic.x = -(Math.random()*1100 + 200);
         boardbasic.y = (Math.random()*200 + 100);
-        scoreboard = scoreboard + 3;
+        scoreboard += 100 + Math.ceil(Math.abs(ball.x - boardheart.x) +wind_v*5)  ;
         console.log("ok,ball in");
     }
     //篮板随机出现的坐标；
@@ -549,12 +549,14 @@ ball_img.onload = function () {
             //数据显示
             context.font = "20px Arial";
             context.fillStyle ="black";
+            /*
             context.fillText("ball.x: "+ball.x,120,20);
             context.fillText("ball.y: "+ball.y,120,60);
             context.fillText("v_y: "+v_y,20,120);
             context.fillText("v_x: "+v_x,20,80);
             context.fillText("v_back: "+v_x,220,180);
-            context.fillText("你的分数" + scoreboard,120,500);
+            */
+            context.fillText("你的分数" + scoreboard,20,100);
             //context.fillText("台风风向→: "+wind_v,20,30);
             
             t_i = 60-Math.ceil(t/180 );
