@@ -5,7 +5,7 @@
     <meta charset="utf-8">
 </head>
 <body>
-<canvas id="myCanvas1" width="1500" height="700" style="border:solid;position: absolute;z-index: 0">
+<canvas id="myCanvas1" width="1500" height="700" style="position: absolute; left: 0px; top: 0px;">
     你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
 </canvas>
 
@@ -239,6 +239,7 @@
         context.strokeText("GAME OVER",480,300);
         context.font = "30px Arial";
         context.fillStyle ="pink";
+        context.fillText("得分: "+scoreboard,650,400);
         context.fillText("点击R重新开始游戏",650,500);
     }
     
@@ -397,8 +398,6 @@
     var scoreyes = function(){
         
         if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
-            //TODO:
-            
             boardbasic.x = (Math.random()*600 + 100);
             boardbasic.y = (Math.random()*200 + 200);
             scoreboard = scoreboard + 3;
@@ -521,7 +520,7 @@
             context.clearRect(0, 0, 1500, 700);
             context.save();
             //游戏开始界面
-            if (!gamebegin){begin_interface();t=0}
+            if (!gamebegin){begin_interface();t=0;scoreboard=0;}
             else if (gamebegin && !gameover){
                 //背景图
                 context.drawImage(background, 0, 0, 750,563,0,-200,1500,1126);
