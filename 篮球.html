@@ -51,6 +51,20 @@
     var gameover = false;//游戏是否结束
     var gamebegin = false;//游戏是否开始
     var backdoor = {clock:false,wind:false,count:0}//后门
+    var Vector = function(x, y) { this.x = x; this.y = y; };
+    Vector.prototype = {
+        copy: function() { return new Vector(this.x, this.y); },
+        length: function() { return Math.sqrt(this.x * this.x + this.y * this.y); },
+        sqrLength: function() { return this.x * this.x + this.y * this.y; },
+        normalize: function() { var inv = 1 / this.length(); return new Vector(this.x * inv, this.y * inv); },
+        negate: function() { return new Vector(-this.x, -this.y); },
+        add: function(v) { return new Vector(this.x + v.x, this.y + v.y); },
+        subtract: function(v) { return new Vector(this.x - v.x, this.y - v.y); },
+        multiply: function(f) { return new Vector(this.x * f, this.y * f); },
+        divide: function(f) { var invf = 1 / f; return new Vector(this.x * invf, this.y * invf); },
+        dot: function(v) { return this.x * v.x + this.y * v.y; }
+    };
+    
     }
 
     //键盘后门
@@ -74,6 +88,25 @@
         else if (e.keyCode==69){gameover = true;
             console.log("backdoor: gameover");
         }
+        else if (e.keyCode == 37){
+            //向左点击效果
+            v_y = 15;
+            LevelMove = true;
+            v_back = 1;
+            lor = -1;
+            v_x = 5;
+            gamebegin = true;
+        }
+        else if (e.keyCode == 39){
+            //向右点击效果
+            v_y = 15;
+            LevelMove = true;
+            v_back = 1;
+            lor = 1;
+            v_x = 5;
+            gamebegin = true;
+        }
+
         if (backdoor.count == 5){
             if (e.keyCode==67){backdoor.clock = true;
                 console.log("backdoor: clock");
@@ -81,24 +114,7 @@
             else if (e.keyCode==87){backdoor.wind = true;
                 console.log("backdoor: wind");
             }
-            else if (e.keyCode == 37){
-                //向左点击效果
-                v_y = 15;
-                LevelMove = true;
-                v_back = 1;
-                lor = -1;
-                v_x = 5;
-                gamebegin = true;
-            }
-            else if (e.keyCode == 39){
-                //向右点击效果
-                v_y = 15;
-                LevelMove = true;
-                v_back = 1;
-                lor = 1;
-                v_x = 5;
-                gamebegin = true;
-            }
+            
         }
     }, false);
 
@@ -194,7 +210,7 @@
         context.rotate((Math.PI/180)*t*1)
         context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
         //测试画图
-        //context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.stroke();
+        context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.fill();context.stroke();
         
         context.rotate(-(Math.PI/180)*t*1)
         context.translate(-ball.x,-ball.y);
@@ -205,7 +221,7 @@
         context.drawImage(background_begin, 0, 0, 750,563,0,-200,1500,1126);
         context.font = "100px Arial";
         context.strokeStyle ="pink";
-        context.fillStyle ="orange";
+        context.fillStyle ="orange  ";
         context.fillText("中珠街头土味篮球",400,300);
         context.strokeText("中珠街头土味篮球",400,300);
         context.font = "50px Arial";
@@ -275,29 +291,8 @@
             context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
             //console.log("print the clock")
         }
-        //进篮效果。
-        var boardimage = new Image();
-        boardimage.src = "clock.png";
-        var board_on = true;
-   
-    /*var board_emerge = function(){
-        if(board_on){
-        boardbasic.x1 = Math.random() * 1100 + 200;
-        boardbasic.y1 = Math.random() * 100 + 500;
-         t_i1 = t_i;
-         board_on = false;
-
-        }
-        else if ((t_i <= t_i1 - board.time)&& board.exist)
-        {
-            if(( ball.x - ball.r <= boardheart.x <= ball.x + ball.r)&&)
-            context.drawImage(boardimage,0,0,300,300,boardbasic.x1,boardbasic.y1,300,300);
-        }
         
-
-   
-    
-    }*/
+    }
 
     //台风效果
     var wind = {
@@ -361,22 +356,57 @@
         w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
         left:false,right:false,up:false,down:false,
         left0:false,right0:false,up0:false,down0:false};//碰撞检测
-    var boardheart = {x:boardbasic.x + 85.5,y:boardbasic.y + 240};//FIXME:这个不知道是啥?
+    var boardheart = {x:boardbasic.x + 85.5*boardbasic.k,y:boardbasic.y + 240*boardbasic.k};//篮框中心 判断得分
     var basketry = {x1:boardbasic.x + 10.5*boardbasic.k,y1:boardbasic.y + 240*boardbasic.k,//篮筐左端(近似为圆)圆心
         x2:boardbasic.x + 160.5*boardbasic.k,y2:boardbasic.y + 240*boardbasic.k,//篮筐右端(近似为圆)圆心
         r:10.5*boardbasic.k};//近似圆的半径
     var connerCollision = {c1:false , c2:false};
     var phi;//非对心碰撞角度(篮筐碰撞)
-    
-        left:false,right:false,up:false,down:false,
+
+
+    var drawboard = function(){
+    board.x=(boardbasic.x + 184*boardbasic.k);
+    board.y=(boardbasic.y + 1*boardbasic.k);//左上角
+    board.w=(27*boardbasic.k);
+    board.h=(269*boardbasic.k);//篮板宽高
+    //board.left=false;board.right=false;board.up=false;board.down=false;
+    //board.left0=false;board.right0=false;board.up0=false;board.down0=false;//碰撞检测
+    boardheart.x = boardbasic.x + 85.5*boardbasic.k;
+    boardheart.y=boardbasic.y + 240*boardbasic.k;//篮框中心 判断得分
+    basketry.x1 = boardbasic.x + 10.5*boardbasic.k;basketry.y1=boardbasic.y + 240*boardbasic.k;//篮筐左端(近似为圆)圆心
+    basketry.x2=boardbasic.x + 160.5*boardbasic.k;basketry.y2=boardbasic.y + 240*boardbasic.k;//篮筐右端(近似为圆)圆心
+    basketry.r=10.5*boardbasic.k;//近似圆的半径
+    }
     //分号啊伟德
+     
 
     var collision = function(){
         context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
+        
+        
         board_collision();//篮板碰撞
-        basketry_collision();//篮筐碰撞
+        //basketry_collision();//篮筐碰撞
+
+        drawboard();
+        //测试用函数
+        fake_board();
     }
 
+    //篮板的随机出现以及进球加分效果
+    
+    var scoreyes = function(){
+        
+        if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
+            //TODO:
+            
+            boardbasic.x = (Math.random()*600 + 100);
+            boardbasic.y = (Math.random()*200 + 200);
+            scoreboard = scoreboard + 3;
+            console.log("ok,ball in");
+        }
+        //篮板随机出现的坐标；
+    }
+   
     var board_collision = function(){
         //单纯粗糙的碰板
         board.left=(ball.x + ball.r >= board.x);//左板之右
@@ -406,16 +436,42 @@
         
         if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
-            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
+            v_back = -1*v_back;
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("left");
         }
         else if (distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y2-ball.y)/(basketry.x2-ball.x));
-            v_x = 0.8*(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y));
+            v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
+            v_back = -1*v_back;
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("right");
-        };
+        };*/
+        var VectorV = new Vector(v_x,v_y);
+        var VectorOrigin = new Vector (ball.x,ball.y);
+        var VectorR = new Vector(1,1);
+        var VectorD = new Vector(1,1);
+        var getV = function (){
+            var VectorD_Normalize = VectorD.normalize();
+            var Vector_i = VectorD_Normalize.multiply(-1 * VectorV.dot(VectorD_Normalize));
+            var Vector_j = VectorV.add(Vector_i);
+            var VectorNewV = Vector_j.add(Vector_i)
+            v_x = VectorNewV.x + wind_v*fre*0.1;
+            v_y = VectorNewV.y;
+            console.log(v_x);
+            return v_x,v_y;
+        }
+        if ((distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r)){
+            VectorR = new Vector(basketry.x1 , basketry.y1);
+            VectorD = VectorR.subtract(VectorOrigin);
+            getV();
+        }
+        if ((distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r)){
+            VectorR = new Vector (basketry.x2 , basketry.y2);
+            VectorD = VectorR.subtract(VectorOrigin);
+            getV();
+        }
 
         //角度改成phi了伟德
 
@@ -503,7 +559,7 @@
                 
                 //道具
                 prop_clock();//闹钟道具
-                //prop_wind();//台风
+                //prop_wind();//台风TODO:台风关了
                 }
                 t++;//时间增加
 
@@ -523,7 +579,6 @@
 
     }
 
-}
 
 </script>
 </body>
