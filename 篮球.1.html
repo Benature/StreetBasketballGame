@@ -384,7 +384,7 @@ var collision = function(){
     context.scale(-1,1);
     context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
    //context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
-    context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(800*boardbasic.k));
+    context.drawImage(board_column,354,293.94,32,306.1,boardbasic.x -boardbasic.lr * 236,Math.abs(boardbasic.y ) - 215 * boardbasic.lr,Math.abs(32*boardbasic.k), 630 - Math.abs(boardbasic.y ) + 215 * boardbasic.lr);
     
     context.scale(-1,1);
 
@@ -411,6 +411,7 @@ var scoreyes = function(){
     
     if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
         boardbasic.x = -(Math.random()*1100 + 200);
+       
         boardbasic.y = (Math.random()*200 + 100);
         scoreboard += 100 + Math.ceil(Math.abs(ball.x - boardheart.x) +wind_v*5)  ;
         console.log("ok,ball in");
@@ -589,6 +590,7 @@ ball_img.onload = function () {
             prop_wind();//台风TODO:台风关了
             
             scoreyes();//得分
+            
             
             }
             t++;//时间增加
