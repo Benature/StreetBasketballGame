@@ -13,6 +13,7 @@
 var canvas = document.getElementById("myCanvas1");
 var context = canvas.getContext("2d");
 
+
 //变量声明一堆
 {
 var ball={x:100,y:250,r:30};//篮球ball圆心坐标,半径
@@ -63,7 +64,7 @@ Vector.prototype = {
     divide: function(f) { var invf = 1 / f; return new Vector(this.x * invf, this.y * invf); },
     dot: function(v) { return this.x * v.x + this.y * v.y; }
 };
-
+var closePoint = {x:0,y:0};
 }
 var scoreboard = 0;//记分板；
 
@@ -465,6 +466,7 @@ var scoreyes = function(){
 };
 
 var board_collision = function(){
+    
     //单纯粗糙的碰板
     board.left=(ball.x + ball.r >= board.x);//左板之右
     board.right=(ball.x - ball.r <= board.x + board.w*boardbasic.lr);//右板之左
@@ -487,13 +489,47 @@ var board_collision = function(){
             console.log('我撞板了up or down');
         }
     }
+
+    /*
+    //find the colsest point!
+    var VectorV = new Vector(v_x,v_y);
+    var VectorOrigin = new Vector (ball.x,ball.y);
+    var VectorR = new Vector(1,1);
+    var VectorD = new Vector(1,1);
+    var getV = function (){
+        var VectorD_Normalize = VectorD.normalize();
+        var Vector_i = VectorD_Normalize.multiply(-1 * VectorV.dot(VectorD_Normalize));
+        var Vector_j = VectorV.add(Vector_i);
+        var VectorNewV = Vector_j.add(Vector_i);
+        v_x = VectorNewV.x + wind_v*fre*0.1;
+        v_y = VectorNewV.y;
+        //console.log(v_x);
+        return v_x,v_y;
+    };
+    if (ball.x < board.x){closePoint.x = board.x}
+    else if (ball.x > board.x + board.w){closePoint.x = board.x + board.w}
+    else {closePoint.x = ball.x}
+    if (ball.y < board.y){closePoint.y = board.y}
+    else if (ball.y > board.y + board.h){closePoint.y = board.y + board.h}
+    else {closePoint.y = ball .y}
+    //get it!
+    //just do it!
+    if (distances(ball.x,ball.y,closePoint.x,closePoint.y) < ball.r){
+        VectorR = new Vector(closePoint.x,closePoint.y);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+        if (v_x == NaN){console.log(closePoint.x,closePoint.y,ball.x,ball.y);}
+        console.log('hit!');
+        console.log(v_x,closePoint.x,closePoint.y);
+    }
+    */
     //测试用函数
     //fake_board();
 };
 var basketry_collision = function(){
     //碰篮框
-    
-    /*if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
+    /*
+    if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
         phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
         v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
         v_back = -1*v_back;
@@ -507,11 +543,13 @@ var basketry_collision = function(){
         v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
         console.log("right");
     };*/
+    
     var VectorV = new Vector(v_x,v_y);
     var VectorOrigin = new Vector (ball.x,ball.y);
     var VectorR = new Vector(1,1);
     var VectorD = new Vector(1,1);
     var getV = function (){
+
         var VectorD_Normalize = VectorD.normalize();
         var Vector_i = VectorD_Normalize.multiply(-1 * VectorV.dot(VectorD_Normalize));
         var Vector_j = VectorV.add(Vector_i);
@@ -534,6 +572,7 @@ var basketry_collision = function(){
         getV();
     }
     //篮板四角碰撞
+    /*
     if ((distances(board.x,board.y,ball.x,ball.y) <= ball.r+basketry.r)){
         VectorR = new Vector (board.x , board.y);
         VectorD = VectorR.subtract(VectorOrigin);
@@ -554,7 +593,7 @@ var basketry_collision = function(){
         VectorD = VectorR.subtract(VectorOrigin);
         getV();
     }
-
+    */
     
     //角度改成phi了伟德
 
