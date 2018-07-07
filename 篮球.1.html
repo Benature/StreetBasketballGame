@@ -481,16 +481,40 @@ var basketry_collision = function(){
         //console.log(v_x);
         return v_x,v_y;
     };
+    //左篮框碰撞
     if ((distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r)){
         VectorR = new Vector(basketry.x1 , basketry.y1);
         VectorD = VectorR.subtract(VectorOrigin);
         getV();
     }
+    //右篮框碰撞
     if ((distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r)){
         VectorR = new Vector (basketry.x2 , basketry.y2);
         VectorD = VectorR.subtract(VectorOrigin);
         getV();
     }
+    //篮板四角碰撞
+    if ((distances(board.x,board.y,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x , board.y);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x + board.w*boardbasic.lr,board.y,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x + board.w*boardbasic.lr, board.y);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x,board.y + board.h*boardbasic.lr,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x , board.y + board.h*boardbasic.lr);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x + board.w*boardbasic.lr,board.y + board.h*boardbasic.lr,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x +board.w*boardbasic.lr, board.y + board.h*boardbasic.lr);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+
     
     //角度改成phi了伟德
 
