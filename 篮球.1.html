@@ -400,7 +400,7 @@ var collision = function(){
     context.scale(-1,1);
     context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
    //context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
-    context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(800*boardbasic.k));
+    context.drawImage(board_column,354,293.94,32,306.1,boardbasic.x -boardbasic.lr * 236,Math.abs(boardbasic.y ) - 215 * boardbasic.lr,Math.abs(32*boardbasic.k), 630 - Math.abs(boardbasic.y ) + 215 * boardbasic.lr);
     
     context.scale(-1,1);
 
@@ -427,6 +427,7 @@ var scoreyes = function(){
     
     if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
         boardbasic.x = -(Math.random()*1100 + 200);
+       
         boardbasic.y = (Math.random()*200 + 100);
         scoreboard += 100 + Math.ceil(Math.abs(ball.x - boardheart.x) +wind_v*5)  ;
         console.log("ok,ball in");
@@ -491,16 +492,40 @@ var basketry_collision = function(){
         //console.log(v_x);
         return v_x,v_y;
     };
+    //左篮框碰撞
     if ((distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r)){
         VectorR = new Vector(basketry.x1 , basketry.y1);
         VectorD = VectorR.subtract(VectorOrigin);
         getV();
     }
+    //右篮框碰撞
     if ((distances(basketry.x2,basketry.y2,ball.x,ball.y) <= ball.r+basketry.r)){
         VectorR = new Vector (basketry.x2 , basketry.y2);
         VectorD = VectorR.subtract(VectorOrigin);
         getV();
     }
+    //篮板四角碰撞
+    if ((distances(board.x,board.y,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x , board.y);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x + board.w*boardbasic.lr,board.y,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x + board.w*boardbasic.lr, board.y);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x,board.y + board.h*boardbasic.lr,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x , board.y + board.h*boardbasic.lr);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+    if ((distances(board.x + board.w*boardbasic.lr,board.y + board.h*boardbasic.lr,ball.x,ball.y) <= ball.r+basketry.r)){
+        VectorR = new Vector (board.x +board.w*boardbasic.lr, board.y + board.h*boardbasic.lr);
+        VectorD = VectorR.subtract(VectorOrigin);
+        getV();
+    }
+
     
     //角度改成phi了伟德
 
@@ -609,6 +634,7 @@ ball_img.onload = function () {
             prop_wind();//台风
             
             scoreyes();//得分
+            
             
             }
             t++;//时间增加
