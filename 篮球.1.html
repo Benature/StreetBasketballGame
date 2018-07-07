@@ -5,7 +5,7 @@
     <meta charset="utf-8">
 </head>
 <body>
-<canvas id="myCanvas1" width="1500" height="700" style="position: absolute; left: 0px; top: 0px;">
+<canvas id="myCanvas1" width="1500" height="1126" style="position: absolute; left: 0px; top: 0px;">
     你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
 </canvas>
 
@@ -210,7 +210,8 @@ var ball_rotate = function(){
 
 //游戏开始界面
 var begin_interface = function(){
-    context.drawImage(background_begin, 0, 0, 750,563,0,-200,1500,1126);
+    context.drawImage(background_begin, 0, 0, 750,563,0,0,1500,700);
+    /*
     context.font = "100px Arial";
     context.strokeStyle ="pink";
     context.fillStyle ="orange  ";
@@ -219,19 +220,23 @@ var begin_interface = function(){
     context.font = "50px Arial";
     context.fillStyle ="purple";
     context.fillText("点击鼠标以开始",550,500);
+    */
 };
 //游戏结束界面
 var end_interface = function(){
-    context.drawImage(background_over, 0, 0, 750,563,0,-200,1500,1126);
+    context.drawImage(background_over, 0, 0, 750,563,0,-280,1500,1126);
+    context.clearRect(0, 700, 1500, 1126);
+    context.font = "40px Arial";
+    context.fillStyle ="pink";
+    context.fillText("得分: "+scoreboard,670,450);
+    /*
     context.font = "100px Arial";
     context.strokeStyle ="white";
     context.fillStyle ="red";
     context.fillText("GAME OVER",480,300);
     context.strokeText("GAME OVER",480,300);
-    context.font = "30px Arial";
-    context.fillStyle ="pink";
-    context.fillText("得分: "+scoreboard,650,400);
     context.fillText("点击R重新开始游戏",650,500);
+    */
 };
 
 //时钟道具特效
@@ -533,20 +538,20 @@ ball_img.src = "img/ball2.png";
 var background = new Image();
 background.src = "img/background.jpg";
 var background_begin = new Image();
-background_begin.src = "img/background_begin.jpg";
+background_begin.src = "img/background_begin2.png";
 var background_over = new Image();
-background_over.src = "img/background_over.jpg";
+background_over.src = "img/background_over2.png";
 ball_img.onload = function () {
     //width = ball_img.width;
     //height = ball_img.height;
     setInterval(function () {
-        context.clearRect(0, 0, 1500, 700);
+        context.clearRect(0, 0, 1500, 1126);
         context.save();
         //游戏开始界面
         if (!gamebegin){begin_interface();t=0;scoreboard=0;}
         else if (gamebegin && !gameover){
             //背景图
-            context.drawImage(background, 0, 0, 750,563,0,-200,1500,1126);
+            context.drawImage(background, 0, 0, 750,563,0,0,1500,700);
             //数据显示
             context.font = "20px Arial";
             context.fillStyle ="black";

@@ -434,7 +434,7 @@
     var basketry_collision = function(){
         //碰篮框
         
-        /*if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
+        if (distances(basketry.x1,basketry.y1,ball.x,ball.y) <= ball.r+basketry.r){
             phi = Math.atan((basketry.y1-ball.y)/(basketry.x1-ball.x));
             v_x = 0.8*(Math.abs(-1*(Math.cos(2*phi)*v_x + Math.sin(2*phi)*v_y)));
             v_back = -1*v_back;
@@ -447,7 +447,7 @@
             v_back = -1*v_back;
             v_y = 0.8*(Math.sin(2*phi)*v_y + Math.cos(2*phi)*v_y);
             console.log("right");
-        };*/
+        };
         var VectorV = new Vector(v_x,v_y);
         var VectorOrigin = new Vector (ball.x,ball.y);
         var VectorR = new Vector(1,1);
