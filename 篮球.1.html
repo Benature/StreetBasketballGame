@@ -5,15 +5,13 @@
     <meta charset="utf-8">
 </head>
 <body>
-<canvas id="myCanvas1" width="1500" height="1126" style="position: absolute; left: 0px; top: 0px;">
+<canvas id="myCanvas1"  style="position: absolute; left: 0px; top: 0px;">
     你的浏览器不支持canvas画布元素，请更新浏览器获得演示效果。
 </canvas>
 
 <script type="text/javascript">
 var canvas = document.getElementById("myCanvas1");
 var context = canvas.getContext("2d");
-var canvas_width = document.getElementById("myCanvas1").width;
-var canvas_height = document.getElementById("myCanvas1").height;
 
 //变量声明一堆
 {
@@ -133,14 +131,26 @@ canvas.addEventListener("mousedown", function (e) {
     gamebegin = true;
 }, false);
 
+//画面大小调整
+canvas.width = document.documentElement.clientWidth;
+canvas.height = document.documentElement.clientHeight;
+var background_width = (canvas.width<1500)?(canvas.width):(1500);
+//console.log(canvas.width);
+console.log(canvas.height);
+//console.log(canvas.height* 563/750);
+console.log(background_width* 563/750);
+console.log((canvas.height-background_width*563/750)/2);
+//console.log((canvas.width-background_width)/2);
+
+
 //水平移动
 var level_move = function(){
     //console.log("LEVEL MOVE!!!")
     ball.x += lor * v_x *fre*v_back + wind_v*fre*0.3;
     v_x -= airf;
     if (v_x <= 0) {v_x=0;}
-    if (ball.x<-ball.r){ball.x=canvas_width+ball.r-10;}
-    else if (ball.x>canvas_width+ball.r){ball.x=-ball.r+10;}
+    if (ball.x<-ball.r){ball.x=canvas.width+ball.r-10;}
+    else if (ball.x>canvas.width+ball.r){ball.x=-ball.r+10;}
 
 };
 //篮球弹跳
@@ -199,18 +209,19 @@ context.scale(1,0.5);
 var ball_rotate = function(){
     //篮球旋转
     context.translate(ball.x, ball.y);
-    context.rotate((Math.PI/180)*t*1);
+    context.rotate((Math.PI/180)*t);
     context.drawImage(ball_img, 0, 0, 250,250,-ball.r,-ball.r,2*ball.r,2*ball.r);
     //测试画图
     //context.beginPath();context.arc(0, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.fill();context.stroke();
     
-    context.rotate(-(Math.PI/180)*t*1);
+    context.rotate(-(Math.PI/180)*t);
     context.translate(-ball.x,-ball.y);
 };
 
 //游戏开始界面
 var begin_interface = function(){
-    context.drawImage(background_begin, 0, 0, 750,563,0,0,1500,700);
+    context.drawImage(background_begin, 0, 0, 750,563,0,-200,background_width,background_width*563/750);
+    context.drawImage(background_begin_word, 0, 0, 750,563,0,-120,background_width,background_width*563/750);
     /*
     context.font = "100px Arial";
     context.strokeStyle ="pink";
@@ -224,8 +235,8 @@ var begin_interface = function(){
 };
 //游戏结束界面
 var end_interface = function(){
-    context.drawImage(background_over, 0, 0, 750,563,0,-280,1500,1126);
-    context.clearRect(0, 700, 1500, 1126);
+    context.drawImage(background_over, 0, 0, 750,563,0,-200,1500,1126);
+    //context.clearRect(0, 700, 1500, 1126);
     context.font = "40px Arial";
     context.fillStyle ="pink";
     context.fillText("得分: "+scoreboard,670,450);
@@ -537,7 +548,9 @@ ball_img.src = "img/ball2.png";
 var background = new Image();
 background.src = "img/background.jpg";
 var background_begin = new Image();
-background_begin.src = "img/background_begin2.png";
+background_begin.src = "img/background_begin.png";
+var background_begin_word = new Image();
+background_begin_word.src = "img/begin_words.png";
 var background_over = new Image();
 background_over.src = "img/background_over2.png";
 ball_img.onload = function () {
@@ -546,11 +559,13 @@ ball_img.onload = function () {
     setInterval(function () {
         context.clearRect(0, 0, 1500, 1126);
         context.save();
+        context.translate((canvas.width-background_width)/2,(canvas.height-background_width*563/750)/2);
+
         //游戏开始界面
         if (!gamebegin){begin_interface();t=0;scoreboard=0;}
         else if (gamebegin && !gameover){
             //背景图
-            context.drawImage(background, 0, 0, 750,563,0,0,1500,700);
+            context.drawImage(background, 0, 0, 750,563,0,-200,1500,1126);
             //数据显示
             context.font = "20px Arial";
             context.fillStyle ="black";
@@ -591,7 +606,7 @@ ball_img.onload = function () {
             
             //道具
             prop_clock();//闹钟道具
-            prop_wind();//台风TODO:台风关了
+            prop_wind();//台风
             
             scoreyes();//得分
             
