@@ -124,7 +124,7 @@ canvas.addEventListener("mousedown", function (e) {
     mouseY = e.pageY - canvas.clientTop;
     //console.log(mouseX + "," + mouseY);
     v_back = 1;
-    lor = (mouseX >= ball.x)?(1):(-1);
+    lor = (mouseX -(canvas.width-background_width)/2>= ball.x)?(1):(-1);
     //console.log("lor"+lor);
     v_x = 5;
     //console.log(" now should LEVEL MOVE")
@@ -149,7 +149,7 @@ var level_move = function(){
     ball.x += lor * v_x *fre*v_back + wind_v*fre*0.3;
     v_x -= airf;
     if (v_x <= 0) {v_x=0;}
-    if (ball.x<-ball.r){ball.x=canvas.width+ball.r-10;}
+    if (ball.x<-ball.r){ball.x=background_width+ball.r-10;}
     else if (ball.x>canvas.width+ball.r){ball.x=-ball.r+10;}
 
 };
@@ -239,7 +239,7 @@ var end_interface = function(){
     //context.clearRect(0, 700, 1500, 1126);
     context.font = "40px Arial";
     context.fillStyle ="pink";
-    context.fillText("得分: "+scoreboard,670,450);
+    context.fillText("得分: "+scoreboard,670,520);
     /*
     context.font = "100px Arial";
     context.strokeStyle ="white";
@@ -294,10 +294,12 @@ var prop_clock = function(){
     else if(t_i <= t_i0-propstime-5){clock_on=false;}//道具冷却
 
     //文字效果
+    var propstimeup= new Image ();
+    propstimeup.src = "img/time_words.png";
     if (t_i >= t_i1 - 1 && p_word){
         context.strokeStyle ="orange";
         context.font = "20px Arial";
-        context.strokeText("加三秒蛤!",propsplace_x1-10,propsplace_y1-10);
+        context.drawImage(propstimeup,0,0,722,238,propsplace_x1-10,propsplace_y1-10,300,100);
         //console.log("print the clock")
     }
     
@@ -314,6 +316,9 @@ var wind = {
 var prop_wind = function(){
     wind.trigger = Math.ceil(Math.random() * 1000);
     //#wind.trigger = 55;
+    var windemerge = new Image();
+    windemerge.src ="img/word_wind.png";
+
     if((wind.trigger === t_i ||backdoor.wind) && !wind.on){
         wind_v = Math.floor(Math.random()*10)-5;//台风风速随机
         wind.blow = true;
@@ -326,16 +331,14 @@ var prop_wind = function(){
         context.strokeStyle ="purple";
         context.fillStyle ="purple";
         context.font = "50px Arial";
-        context.strokeText("中珠又刮台风辣!",200,60);
-        context.fillText("中珠又刮台风辣!",200,60);
+        context.drawImage(windemerge,0,0,780,253,200,15,350,120);
+       
         context.font = "30px Arial";
         if (wind_v>0){
-            context.strokeText("→"+wind_v+"级鸭大魔法飓风",600,50);
-            context.fillText("→"+wind_v+"级鸭大魔法飓风",600,50);
+            context.fillText("→"+wind_v,220,110);
         }
         if (wind_v<0){
-            context.strokeText("←"+(-wind_v)+"级鸭大魔法飓风",600,50);
-            context.fillText("←"+(-wind_v)+"级鸭大魔法飓风",600,50);
+            context.fillText("←"+(-wind_v),220,110);
         }
     }
     else{
@@ -357,15 +360,18 @@ var distances = function (x1,y1,x2,y2){
 //对篮板位置的判断
 var boardplace = function()
 {
-    if (boardbasic.x <= 400)
-    {boardbasic.lr = 1;}
+    if (boardbasic.x <= background_width/2)
+    {boardbasic.lr = -1;}
+    else{
+        boardbasic.lr = 1;
+    }
 };
 
 //篮板碰撞
 var board_img = new Image();
 board_img.src = "img/board2.png";
 
-var boardbasic = {x:-300, y:100, k:2/3,lr:-1};//篮板基点坐标及缩放系数k
+var boardbasic = {x:300, y:100, k:2/3,lr:-1};//篮板基点坐标及缩放系数k
 //篮板
 var board = {x:(boardbasic.x + 184*boardbasic.k),y:(boardbasic.y + 1*boardbasic.k),//左上角
     w:(27*boardbasic.k),h:(269*boardbasic.k),//篮板宽高
@@ -380,57 +386,80 @@ var phi;//非对心碰撞角度(篮筐碰撞)
 
 var board_column = new Image();
 board_column.src = "img/board_column.png";
+
+
 var drawboard = function(){
-board.x=(boardbasic.x + 184*boardbasic.k)*boardbasic.lr;
+    boardplace();
+board.x=(boardbasic.x + 184*boardbasic.k*boardbasic.lr);
 board.y=(boardbasic.y + 1*boardbasic.k);//左上角
 board.w=(27*boardbasic.k);
 board.h=(269*boardbasic.k);//篮板宽高
-//board.left=false;board.right=false;board.up=false;board.down=false;
-//board.left0=false;board.right0=false;board.up0=false;board.down0=false;//碰撞检测
-boardheart.x = (boardbasic.x + 85.5*boardbasic.k)*boardbasic.lr;
-boardheart.y=boardbasic.y + 240*boardbasic.k;//篮框中心 判断得分
-basketry.x1 = (boardbasic.x + 10.5*boardbasic.k)*boardbasic.lr;basketry.y1=boardbasic.y + 240*boardbasic.k;//篮筐左端(近似为圆)圆心
-basketry.x2=(boardbasic.x + 160.5*boardbasic.k)*boardbasic.lr;basketry.y2=boardbasic.y + 240*boardbasic.k;//篮筐右端(近似为圆)圆心
+//篮框中心 判断得分
+boardheart.x = (boardbasic.x + 85.5*boardbasic.k*boardbasic.lr);
+boardheart.y=boardbasic.y + 240*boardbasic.k;
+//篮筐左端(近似为圆)圆心
+basketry.x1 = (boardbasic.x + 10.5*boardbasic.k*boardbasic.lr);
+basketry.y1=boardbasic.y + 240*boardbasic.k;
+//篮筐右端(近似为圆)圆心
+basketry.x2=(boardbasic.x + 160.5*boardbasic.k*boardbasic.lr);
+basketry.y2=boardbasic.y + 240*boardbasic.k;
 basketry.r=10.5*boardbasic.k;//近似圆的半径
-
 };
- 
-
 var collision = function(){
-    context.scale(-1,1);
-    context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
-   //context.drawImage(board_column,0, 0,600,600,boardbasic.x,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
-    context.drawImage(board_column,354,293.94,32,306.1,boardbasic.x -boardbasic.lr * 236,Math.abs(boardbasic.y ) - 215 * boardbasic.lr,Math.abs(32*boardbasic.k), 630 - Math.abs(boardbasic.y ) + 215 * boardbasic.lr);
-    
-    context.scale(-1,1);
+    drawboard();
+    context.scale(boardbasic.lr,1);
+    context.drawImage(board_img, 0, 0, 600,600,(boardbasic.x)*boardbasic.lr,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
+    context.drawImage(board_column,0, 0,600,600,(boardbasic.x)*boardbasic.lr,Math.abs(boardbasic.y),Math.abs(600*boardbasic.k),Math.abs(600*boardbasic.k));
+    context.drawImage(board_column,354,293.94,32,306.1,(boardbasic.x+236.5*boardbasic.lr)*boardbasic.lr,Math.abs(boardbasic.y ) + 215,Math.abs(32*boardbasic.k), groundy - Math.abs(boardbasic.y ) - 215+20 );
+    //context.beginPath();context.arc(100, 0, ball.r, 0, 360 * Math.PI / 180, true);context.moveTo(0, 0);context.lineTo(0, ball.r);context.fill();context.stroke();
 
-    /*
-    context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
-    context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
-    context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,800*boardbasic.k);
-    */
+    context.scale(boardbasic.lr,1);
+    //console.log("boardbasic.x: "+boardbasic.x)
+    
+    //context.drawImage(board_img, 0, 0, 600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
+    //context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,600*boardbasic.k);
+    //context.drawImage(board_column,0, 0,600,600,boardbasic.x,boardbasic.y,600*boardbasic.k,800*boardbasic.k);
+    
+    
+
+
     board_collision();//篮板碰撞
     basketry_collision();//篮筐碰撞
-    bug_collision();//avoid bug
-
-
-
-
-    drawboard();
+    bug_collision();//avoid bug  
     //测试用函数
-    fake_board();
+    //fake_board();
 };
+//画一个假篮板
+var fake_board = function(){
+    context.fillStyle = 'rgba(129, 239, 32, 0.6)';
+    //篮筐两端
+    context.beginPath();context.arc(basketry.x1,basketry.y1, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+    context.fillStyle ="purple";
+    context.beginPath();context.arc(basketry.x2,basketry.y2, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
+    //篮筐中心
+    context.beginPath();context.arc(boardheart.x,boardheart.y, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
 
+    //篮板
+    console.log("board.x:"+board.x);
+    context.beginPath();
+    context.moveTo(board.x,board.y);
+    context.lineTo(board.x+board.w*boardbasic.lr,board.y);
+    context.lineTo(board.x+board.w*boardbasic.lr,board.y+board.h);
+    context.lineTo(board.x,board.y+board.h);
+    context.closePath();
+    context.fill();          
+    
+};
 //篮板的随机出现以及进球加分效果
 
 var scoreyes = function(){
     
     if ((Math.abs(ball.y - boardheart.y) <= 3) && (Math.abs(ball.x - boardheart.x) <= 30) && v_y <= 0){
-        boardbasic.x = -(Math.random()*1100 + 200);
+        boardbasic.x = (Math.random()*(background_width-400) + 300);
        
         boardbasic.y = (Math.random()*200 + 100);
         scoreboard += 100 + Math.ceil(Math.abs(ball.x - boardheart.x) +wind_v*5)  ;
-        console.log("ok,ball in");
+        //console.log("ok,ball in");
     }
     //篮板随机出现的坐标；
 };
@@ -459,7 +488,7 @@ var board_collision = function(){
         }
     }
     //测试用函数
-    fake_board();
+    //fake_board();
 };
 var basketry_collision = function(){
     //碰篮框
@@ -540,27 +569,7 @@ var bug_collision = function(){
     }
 
 };
-//画一个假篮板
-var fake_board = function(){
-    context.fillStyle = 'rgba(129, 239, 32, 0.6)';
-    //篮筐两端
-    context.beginPath();context.arc(basketry.x1,basketry.y1, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
-    //context.fillStyle ="purple";
-    context.beginPath();context.arc(basketry.x2,basketry.y2, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
-    //篮筐中心
-    context.beginPath();context.arc(boardheart.x,boardheart.y, Math.abs(basketry.r), 0, 360 * Math.PI / 180, true);context.closePath();context.fill();
 
-    //篮板
-    //console.log(board.x)
-    context.beginPath();
-    context.moveTo(board.x,board.y);
-    context.lineTo(board.x+board.w*boardbasic.lr,board.y);
-    context.lineTo(board.x+board.w*boardbasic.lr,board.y+board.h);
-    context.lineTo(board.x,board.y+board.h);
-    context.closePath();
-    context.fill();          
-    
-};
 
 
 //----------------------------------------//
@@ -582,9 +591,9 @@ ball_img.onload = function () {
     //width = ball_img.width;
     //height = ball_img.height;
     setInterval(function () {
-        context.clearRect(0, 0, 1500, 1126);
+        context.clearRect(0, 0, canvas.width, canvas.height);
         context.save();
-        context.translate((canvas.width-background_width)/2,(canvas.height-background_width*563/750)/2);
+        context.translate((canvas.width-background_width)/2,Math.abs(canvas.height-background_width*563/750)/2);
 
         //游戏开始界面
         if (!gamebegin){begin_interface();t=0;scoreboard=0;}
