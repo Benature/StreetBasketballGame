@@ -75,12 +75,15 @@ var scoreShow = function(){
     scores.sort(function(v1,v2){
         return v2-v1;
     })
-    context.font = "20px Arial";
     context.fillStyle ="purple";
-    context.fillText("历史分数",background_width-105,10);
-    context.fillText("状元   "+scores[0],background_width-120,30);
-    context.fillText("榜眼   "+scores[1],background_width-120,50);
-    context.fillText("探花   "+scores[2],background_width-120,70);
+    context.font = "20px Arial";
+    context.fillText("历史分数",background_width-135,10);
+    context.fillText("状元   "+scores[0],background_width-150,30);
+    context.fillText("榜眼   "+scores[1],background_width-150,50);
+    context.fillText("探花   "+scores[2],background_width-150,70);
+    context.font = "15px Arial";
+    context.fillText("(刷新页面后数据将会丢失)",background_width-180,90);
+
 };
 
 //键盘后门
@@ -151,7 +154,7 @@ canvas.addEventListener("mousedown", function (e) {
 canvas.width = (document.documentElement.clientWidth>1500)?(document.documentElement.clientWidth):(1500);
 canvas.height = canvas.width*563/750;//document.documentElement.clientHeight;
 var background_width = 1500;//(canvas.width/canvas.height>750/563)?((canvas.width<1500)?(canvas.width):(1500)):((canvas.height<1126)?(canvas.height):(1126));
-console.log(canvas.width);
+//console.log(canvas.width);
 //console.log(canvas.height);
 //console.log(canvas.height* 563/750);
 //console.log(background_width* 563/750);
